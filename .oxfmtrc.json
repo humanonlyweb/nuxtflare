@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "experimentalSortImports.groups": [
+    "builtin",
+    "external",
+    "internal",
+    "parent",
+    "sibling",
+    "index",
+    "object",
+    "type"
+  ],
+  "ignorePatterns": ["tsconfig.*.json", "server/database/migrations/"]
+}

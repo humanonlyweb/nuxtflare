@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "typescript", "oxc", "vue", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "no-alert": "error",
+    "no-console": "warn",
+    "no-await-in-loop": "off",
+    "unicorn/no-array-sort": "off",
+    "no-restricted-globals": "error",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-floating-promises": "error",
+    "typescript/consistent-type-imports": "error"
+  },
+  "overrides": [
+    {
+      "files": ["test/e2e/**/*.ts"],
+      "rules": {
+        "jest/valid-describe-callback": "off"
+      }
+    }
+  ]
+}
