@@ -4,43 +4,37 @@ import { createNoteSchema, type CreateNoteInput } from "#shared/utils/notes.sche
 const { pending = false } = defineProps<{ pending?: boolean }>();
 const emit = defineEmits<{ submit: [input: CreateNoteInput] }>();
 
-const title = ref("");
-const body = ref("");
-const errors = ref<Record<string, string>>({});
+const formRef = useTemplateRef<HTMLElement>("formRef");
 
-function onSubmit() {
-  const result = createNoteSchema.safeParse({ title: title.value, body: body.value });
-  if (!result.success) {
-    errors.value = Object.fromEntries(
-      result.error.issues.map((issue) => [String(issue.path[0] ?? "title"), issue.message]),
-    );
-    return;
-  }
-  errors.value = {};
-  emit("submit", result.data);
-  title.value = "";
-  body.value = "";
-}
+const { form, errors, submit, shouldDisableSubmit, reset } = useForm({
+  validationSchema: createNoteSchema,
+  initialValues: { title: "", body: "" },
+  formRef,
+  onSubmit: (values) => {
+    emit("submit", values);
+    reset();
+  },
+});
 </script>
 
 <template>
-  <form :class="$style.form" @submit.prevent="onSubmit">
+  <form ref="formRef" :class="$style.form" novalidate @submit="submit">
     <UiTextField
-      v-model="title"
+      v-model="form.title"
+      name="title"
       label="Title"
       placeholder="A short title"
       required
       :error="errors.title"
     />
-    <UiTextField
-      v-model="body"
+    <UiTextarea
+      v-model="form.body"
+      name="body"
       label="Note"
       placeholder="Write something…"
-      multiline
-      :spellcheck="true"
       :error="errors.body"
     />
-    <UiButton type="submit" :loading="pending">Add note</UiButton>
+    <UiButton type="submit" :loading="pending" :disabled="shouldDisableSubmit">Add note</UiButton>
   </form>
 </template>
 

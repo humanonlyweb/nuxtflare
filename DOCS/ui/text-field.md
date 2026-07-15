@@ -1,21 +1,21 @@
 # UiTextField
 
-Labelled text input (or textarea). Auto-imported as `<UiTextField>` from
-`app/components/ui/text-field.vue`. Two-way binds with `v-model`.
+Labelled single-line text input. Auto-imported as `<UiTextField>` from
+`app/components/ui/text-field.vue`. Two-way binds with `v-model`. For multi-line input
+use [`UiTextarea`](./textarea.md).
 
 ## Props
 
-| Prop           | Type      | Default  | Notes                                     |
-| -------------- | --------- | -------- | ----------------------------------------- |
-| `label`        | `string`  | —        | Required. Clicking it focuses the field   |
-| `multiline`    | `boolean` | `false`  | Renders a `<textarea>`                    |
-| `type`         | `string`  | `"text"` | Input type (`email`, `password`, …)       |
-| `placeholder`  | `string`  | —        |                                           |
-| `required`     | `boolean` | `false`  | Native HTML validation                    |
-| `error`        | `string`  | —        | Shows the message and sets `aria-invalid` |
-| `autocomplete` | `string`  | `"off"`  |                                           |
-| `spellcheck`   | `boolean` | `false`  |                                           |
-| `rows`         | `number`  | `3`      | Textarea rows                             |
+| Prop           | Type      | Default  | Notes                                                   |
+| -------------- | --------- | -------- | ------------------------------------------------------- |
+| `label`        | `string`  | —        | Required. Clicking it focuses the field                 |
+| `name`         | `string`  | —        | Native field name; `useForm` uses it for touch tracking |
+| `type`         | `string`  | `"text"` | Input type (`email`, `password`, …)                     |
+| `placeholder`  | `string`  | —        |                                                         |
+| `required`     | `boolean` | `false`  | Native HTML validation                                  |
+| `error`        | `string`  | —        | Shows the message and sets `aria-invalid`               |
+| `autocomplete` | `string`  | `"off"`  |                                                         |
+| `spellcheck`   | `boolean` | `false`  |                                                         |
 
 `v-model` binds a `string`.
 
@@ -23,7 +23,6 @@ Labelled text input (or textarea). Auto-imported as `<UiTextField>` from
 
 ```vue
 <UiTextField v-model="email" label="Email" type="email" required :error="errors.email" />
-<UiTextField v-model="body" label="Note" multiline :spellcheck="true" />
 ```
 
 ## Notes

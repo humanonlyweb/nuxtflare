@@ -2,21 +2,19 @@
 const {
   label,
   name,
-  type = "text",
   placeholder,
   required = false,
   error,
-  autocomplete = "off",
-  spellcheck = false,
+  spellcheck = true,
+  rows = 3,
 } = defineProps<{
   label: string;
   name?: string;
-  type?: string;
   placeholder?: string;
   required?: boolean;
   error?: string;
-  autocomplete?: string;
   spellcheck?: boolean;
+  rows?: number;
 }>();
 
 const model = defineModel<string>({ default: "" });
@@ -29,14 +27,13 @@ const errorId = computed(() => (error ? `${id}-error` : undefined));
   <div :class="$style.field">
     <label :for="id">{{ label }}</label>
 
-    <input
+    <textarea
       :id="id"
       v-model="model"
       :name="name"
-      :type="type"
       :placeholder="placeholder"
       :required="required"
-      :autocomplete="autocomplete"
+      :rows="rows"
       :spellcheck="spellcheck"
       :aria-invalid="!!error"
       :aria-describedby="errorId"
@@ -59,7 +56,7 @@ const errorId = computed(() => (error ? `${id}-error` : undefined));
   color: var(--text-muted);
 }
 
-.field input {
+.field textarea {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font: inherit;
@@ -68,18 +65,20 @@ const errorId = computed(() => (error ? `${id}-error` : undefined));
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
+  resize: vertical;
+  min-height: 4.5rem;
   transition:
     border-color 0.12s ease,
     box-shadow 0.12s ease;
 }
 
-.field input:focus-visible {
+.field textarea:focus-visible {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--ring);
 }
 
-.field input[aria-invalid="true"] {
+.field textarea[aria-invalid="true"] {
   border-color: var(--danger);
 }
 

@@ -1,16 +1,27 @@
-# humanonlyweb — Nuxt 4 + Cloudflare starter
+# HumanOnlyWeb — Nuxt 4 + Cloudflare starter
 
 An opinionated, production-shaped template for Nuxt 4 fullstack apps on Cloudflare
 Workers + D1. Click **Use this template** on GitHub, then run the setup script.
 
-**Stack:** Nuxt 4 · Vue 3 · Cloudflare Workers (`cloudflare-module`) · D1 + Drizzle ·
-Zod · evlog · oxlint/oxfmt · bun.
+**Stack:**
+
+- Nuxt 4+
+- Vue 3
+- Cloudflare Workers (`cloudflare-module`) · D1
+- Drizzle
+- Zod
+- evlog
+- oxlint/oxfmt
+- bun.
 
 ## Getting started
 
 ```bash
 # 1. Create your repo from this template, then clone it and install
 bun install
+
+# (optional) Update dependencies to latest versions
+bun upgrade
 
 # 2. Rename the project (package name, wrangler, evlog service, domain).
 #    One-time: it guards against re-runs and removes itself when done.
@@ -74,8 +85,13 @@ shared/utils/            # Zod schemas + helpers shared by client & server
 ## Architecture
 
 Server code follows a strict **Routes → Controllers → Services** layering.
-See [`DOCS/ARCHITECTURE.md`](./DOCS/ARCHITECTURE.md). Component usage lives in
-[`DOCS/ui`](./DOCS/ui) and `DOCS/<feature>`.
+See [`DOCS/ARCHITECTURE.md`](./DOCS/ARCHITECTURE.md). Component and composable usage
+lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
+
+## Forms
+
+A small Zod-native [`useForm`](./DOCS/composables/use-form.md) composable is included
+(validation, touched/dirty tracking, submit state). It's optional — bring your own form library (vee-validate, FormKit, …) if you prefer
 
 ## Deploy
 
