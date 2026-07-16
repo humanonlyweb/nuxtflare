@@ -3,7 +3,7 @@ export function useAuth() {
 
   async function signout() {
     await clear();
-    await navigateTo("/sign-in");
+    await navigateTo("/auth/sign-in");
   }
 
   return { loggedIn, user, refresh, signout };

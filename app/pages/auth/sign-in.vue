@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { loggedIn } = useUserSession();
+definePageMeta({ middleware: "guest" });
+
 const route = useRoute();
 
 useSeoMeta({
@@ -16,10 +17,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 const error = computed(() => {
   const code = Array.isArray(route.query.error) ? route.query.error[0] : route.query.error;
   return code ? (ERROR_MESSAGES[code] ?? ERROR_MESSAGES.oauth) : null;
-});
-
-watchEffect(() => {
-  if (loggedIn.value) navigateTo("/");
 });
 </script>
 

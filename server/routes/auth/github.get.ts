@@ -30,6 +30,6 @@ export default defineOAuthGitHubEventHandler({
     });
   },
   onError(event) {
-    return sendRedirect(event, "/sign-in?error=oauth");
+    return sendRedirect(event, "/auth/sign-in?error=oauth");
   },
 });

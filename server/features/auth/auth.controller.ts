@@ -16,7 +16,7 @@ export class AuthController {
       return sendRedirect(event, linked ? `/?linked=${identity.provider}` : "/");
     } catch (error) {
       if (error instanceof UnverifiedOAuthEmailError) {
-        return sendRedirect(event, "/sign-in?error=oauth-unverified");
+        return sendRedirect(event, "/auth/sign-in?error=oauth-unverified");
       }
       throw error;
     }

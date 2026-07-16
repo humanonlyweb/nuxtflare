@@ -13,7 +13,7 @@ const { loggedIn, user, signout } = useAuth();
           <span class="who">{{ user?.name }}</span>
           <UiButton variant="ghost" @click="signout">Sign out</UiButton>
         </template>
-        <NuxtLink v-else to="/sign-in" class="signin">Sign in</NuxtLink>
+        <NuxtLink v-else to="/auth/sign-in" class="signin">Sign in</NuxtLink>
       </nav>
     </header>
 
