@@ -39,10 +39,10 @@ export class AuthService {
         .from(users)
         .where(eq(users.id, link.userId))
         .limit(1);
+
       if (existing) return { user: toSessionUser(existing), linked: false, isNew: false };
     }
 
-    // Creating or linking requires a trustworthy email — an unverified one could hijack an account.
     if (!identity.emailVerified) throw new UnverifiedOAuthEmailError();
 
     const [existingByEmail] = await this.db
@@ -53,6 +53,7 @@ export class AuthService {
 
     if (existingByEmail) {
       const verifiedAt = existingByEmail.emailVerifiedAt ?? new Date();
+
       if (!existingByEmail.emailVerifiedAt) {
         await this.db
           .update(users)
@@ -60,6 +61,7 @@ export class AuthService {
           .where(eq(users.id, existingByEmail.id));
       }
       await this.linkProvider(existingByEmail.id, identity);
+
       return {
         user: toSessionUser({ ...existingByEmail, emailVerifiedAt: verifiedAt }),
         linked: true,
