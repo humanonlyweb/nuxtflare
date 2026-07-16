@@ -37,7 +37,18 @@ async function edit(path, fn) {
 }
 
 await edit("package.json", (s) => s.replace(/"name":\s*"template"/, `"name": "${name}"`));
-await edit("nuxt.config.ts", (s) => s.replace(/service:\s*"template"/, `service: "${name}"`));
+await edit("nuxt.config.ts", (s) =>
+  s
+    .replace(/service:\s*"template"/, `service: "${name}"`)
+    .replace(/fromName:\s*"HumanOnlyWeb"/, `fromName: "${name}"`)
+    .replace(
+      /fromAddress:\s*"contact@humanonlyweb\.com"/,
+      `fromAddress: "contact@${domain || "example.com"}"`,
+    ),
+);
+await edit("app/layouts/default.vue", (s) => s.replaceAll("humanonlyweb", name));
+await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
+await edit("app/pages/auth/sign-in.vue", (s) => s.replaceAll("humanonlyweb starter", name));
 await edit("wrangler.jsonc", (s) =>
   s
     .replace(/"name":\s*"template"/, `"name": "${name}"`)
@@ -57,4 +68,5 @@ if (!domain) {
 }
 console.log(`  • bunx wrangler d1 create ${name}-db`);
 console.log("  • Paste the returned database_id into wrangler.jsonc (REPLACE_WITH_D1_DATABASE_ID)");
+console.log("  • grep -ri humanonlyweb . for any branding this script missed");
 console.log("  • bun run db:migrate:local  &&  bun run dev");

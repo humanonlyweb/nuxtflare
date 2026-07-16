@@ -34,9 +34,16 @@ Server code is layered **Routes → Controllers → Services**, each with one jo
   it builds its own db from the `cloudflare:workers` `env` and delegates to the service.
   Feature-colocated tasks are registered in `nuxt.config.ts` (`nitro.tasks` +
   `scheduledTasks`) and need a matching cron in `wrangler.jsonc`.
-- **Caching** — a cached GET must be busted after a related write with
-  `invalidateCachedRoutes({ keys: ["apiresource"] })` in the controller (pass
-  `name` to target a storage other than the default `"cache"`).
+- **Authorization** — controllers gate access with `requireUserSession(event)` and
+  pass `user.id` into the service; services scope every query by `userId` so a
+  foreign id 404s instead of leaking existence. The notes feature is the worked
+  example. Page middleware (`auth`/`guest`) is a UI gate only — the server check
+  is the one that counts.
+- **Caching** — the template ships no cached route; when you add one
+  (`defineCachedEventHandler` or a `cache` route rule), bust it after a related
+  write with `invalidateCachedRoutes({ keys: ["apiresource"] })` in the controller
+  (pass `name` to target a storage other than the default `"cache"`). Don't cache
+  per-user responses this way — the cache is shared across users.
 
 ## Adding a feature
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+definePageMeta({ middleware: "auth" });
+
 const { notes, pending, creating, create, remove } = useNotes();
 
 useSeoMeta({
@@ -12,8 +14,9 @@ useSeoMeta({
     <section class="intro">
       <h1>Notes</h1>
       <p>
-        A demo feature wired end to end — shared Zod schema → route → controller → service → Drizzle
-        on D1. Delete the <code>notes</code> feature when you start your own.
+        A demo feature wired end to end — shared Zod schema → route → controller (session +
+        validation) → service → Drizzle on D1, scoped to your account. Delete the
+        <code>notes</code> feature when you start your own.
       </p>
     </section>
 

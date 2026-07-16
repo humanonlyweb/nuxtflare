@@ -31,7 +31,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version-file: package.json
 
       - name: Cache dependencies
         uses: actions/cache@v6.1.0
@@ -66,7 +66,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version-file: package.json
 
       - name: Cache dependencies
         uses: actions/cache@v6.1.0
@@ -122,7 +122,7 @@ jobs:
   #     - name: Set up Bun
   #       uses: oven-sh/setup-bun@v2
   #       with:
-  #         bun-version: latest
+  #         bun-version-file: package.json
   #
   #     - name: Download build output
   #       uses: actions/download-artifact@v8

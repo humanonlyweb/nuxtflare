@@ -9,8 +9,7 @@ Workers. Click **Use this template** on GitHub, then run the setup script.
 - Cloudflare Workers (`cloudflare-module`)
   - Email Sending binding
   - D1 database
-  - R2 storage
-  - KV storage etc
+  - (R2 / KV / Queues are one `wrangler.jsonc` binding + `server/types/env.d.ts` entry away)
 - DrizzleORM
 - Zod
 - evlog
@@ -39,7 +38,10 @@ bun run dev
 ```
 
 The app ships with a **notes** demo feature wired end to end (including a scheduled
-`notes:prune` task). To remove it cleanly — so the build stays green — delete:
+`notes:prune` task). Notes are user-scoped: the page sits behind the `auth`
+middleware and the API enforces `requireUserSession` + ownership in the
+controller/service, so the demo doubles as the authorization worked example —
+sign in (OAuth, below) to use it. To remove it cleanly — so the build stays green — delete:
 
 - `server/features/notes/`, `server/api/notes/`, `server/database/schema/notes.ts`
 - `shared/utils/schema-validation/notes.schema.ts` (and its re-export in `schema-validation/index.ts`)

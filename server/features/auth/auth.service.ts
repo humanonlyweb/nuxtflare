@@ -72,16 +72,30 @@ export class AuthService {
     const [created] = await this.db
       .insert(users)
       .values({ name, email, emailVerifiedAt: new Date() })
+      .onConflictDoNothing({ target: users.email })
       .returning();
-    await this.linkProvider(created!.id, identity);
-    return { user: toSessionUser(created!), linked: false, isNew: true };
+
+    if (created) {
+      await this.linkProvider(created.id, identity);
+      return { user: toSessionUser(created), linked: false, isNew: true };
+    }
+
+    const [racedUser] = await this.db.select().from(users).where(eq(users.email, email)).limit(1);
+
+    if (!racedUser) throw Errors.internal("Failed to create user");
+
+    await this.linkProvider(racedUser.id, identity);
+    return { user: toSessionUser(racedUser), linked: true, isNew: false };
   }
 
   private async linkProvider(userId: string, identity: OAuthIdentity): Promise<void> {
-    await this.db.insert(userOauth).values({
-      userId,
-      provider: identity.provider,
-      providerUserId: identity.providerUserId,
-    });
+    await this.db
+      .insert(userOauth)
+      .values({
+        userId,
+        provider: identity.provider,
+        providerUserId: identity.providerUserId,
+      })
+      .onConflictDoNothing();
   }
 }
