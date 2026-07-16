@@ -77,14 +77,16 @@ app/                     # Vue frontend (SFC, <script setup lang="ts">)
   pages/
 server/
   api/<resource>/        # thin route handlers (delegate to a controller)
+  routes/<name>/         # Nitro routes — e.g. OAuth callbacks (auth/github.get.ts)
   features/<feature>/    # <feature>.{type,service,controller}.ts (+ optional .task.ts)
   database/schema/       # Drizzle schema (+ generated migrations/)
   database/helpers.ts    # reusable id()/createdAt()/updatedAt() columns
   types/env.d.ts         # Cloudflare binding types (kept in sync with wrangler.jsonc)
   utils/                 # container, drizzle, error, validation, cache
-shared/utils/
-  schema-validation/     # Zod schemas (<feature>.schema.ts) + barrel, shared client & server
-  id-gen.ts              # prefixed-id generator + shape (single source for randomId/idSchema)
+shared/
+  utils/schema-validation/ # Zod schemas (<feature>.schema.ts) + barrel, shared client & server
+  utils/id-gen.ts          # prefixed-id generator + shape (single source for randomId/idSchema)
+  types/                   # ambient types shared across app + server (e.g. session User)
 ```
 
 ## Architecture
@@ -97,6 +99,12 @@ lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
 
 A small Zod-native [`useForm`](./DOCS/composables/use-form.md) composable is included
 (validation, touched/dirty tracking, submit state). Optional — bring your own (vee-validate, FormKit, …) if you prefer.
+
+## Auth
+
+OAuth sign-in (GitHub + Google) via [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils),
+with a `findOrCreateByOAuth` account flow. Copy `.env.example` → `.env` and set the
+session password + provider credentials. See [`DOCS/AUTH.md`](./DOCS/AUTH.md).
 
 ## Deploy
 

@@ -1,11 +1,20 @@
 <script setup lang="ts">
 const year = new Date().getFullYear();
+const { loggedIn, user, signout } = useAuth();
 </script>
 
 <template>
   <div class="shell">
     <header class="site-header">
       <NuxtLink to="/" class="brand">humanonlyweb</NuxtLink>
+
+      <nav class="account">
+        <template v-if="loggedIn">
+          <span class="who">{{ user?.name }}</span>
+          <UiButton variant="ghost" @click="signout">Sign out</UiButton>
+        </template>
+        <NuxtLink v-else to="/sign-in" class="signin">Sign in</NuxtLink>
+      </nav>
     </header>
 
     <main>
@@ -34,6 +43,28 @@ const year = new Date().getFullYear();
   display: flex;
   align-items: center;
   padding-block: 1.25rem;
+}
+
+.site-header {
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.who {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.signin {
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
 }
 
 .site-footer {
