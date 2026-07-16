@@ -1,5 +1,5 @@
-import type { User } from "#auth-utils";
 import type { OAUTH_PROVIDERS } from "#server/utils/constant";
+import type { SessionUser } from "#shared/types/auth";
 
 export type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
 
@@ -10,9 +10,6 @@ export interface OAuthIdentity {
   emailVerified: boolean;
   name: string;
 }
-
-// The user we persist in the session — one shape, declared in shared/types/auth.d.ts.
-export type SessionUser = User;
 
 export interface OAuthSigninResult {
   user: SessionUser;
