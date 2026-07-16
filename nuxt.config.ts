@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     nitroAutoImports: true,
     typedPages: true,
   },
-  modules: ["@nuxt/fonts", "@comark/nuxt", "@vueuse/nuxt", "evlog/nuxt"],
+  modules: ["@nuxt/fonts", "@comark/nuxt", "@vueuse/nuxt", "evlog/nuxt", "nuxt-auth-utils"],
 
   app: {
     head: {
