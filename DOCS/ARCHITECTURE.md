@@ -16,9 +16,11 @@ Server code is layered **Routes → Controllers → Services**, each with one jo
 - **DI container** (`server/utils/container.ts`) is the single place services are
   constructed. Routes call `createContainer(event)` and destructure the controller
   they need. The db is built lazily and memoized per request.
-- **Validation** — all Zod schemas live in `shared/utils/*` and are shared by client
-  and server. Types are inferred (`z.infer`). Controllers validate with the helpers in
-  `server/utils/validation.ts`.
+- **Validation** — all Zod schemas live in `shared/utils/schema-validation/` and are
+  shared by client and server. One `<feature>.schema.ts` per feature, re-exported from
+  `index.ts` (the `#shared/utils/schema-validation` barrel); shared building blocks like
+  `idSchema()` live in `helper.ts`. Types are inferred (`z.infer`). Controllers validate
+  with the helpers in `server/utils/validation.ts`.
 - **Errors & logging** — throw via the evlog-backed `Errors` (`server/utils/error.ts`);
   log with evlog's `log`. No `console.*`, no raw `throw new Error()`.
 - **IDs & timestamps** — reusable column builders in `server/database/helpers.ts`.
@@ -38,7 +40,7 @@ Server code is layered **Routes → Controllers → Services**, each with one jo
 
 ## Adding a feature
 
-1. Zod schemas → `shared/utils/<feature>.schema.ts`
+1. Zod schemas → `shared/utils/schema-validation/<feature>.schema.ts` (re-export from `index.ts`)
 2. Types → `server/features/<feature>/<feature>.type.ts`
 3. Business logic → `<feature>.service.ts`
 4. HTTP logic → `<feature>.controller.ts`

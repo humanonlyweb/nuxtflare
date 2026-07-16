@@ -1,5 +1,6 @@
 import { type DrizzleD1Database, drizzle } from "drizzle-orm/d1";
 import type { H3Event } from "h3";
+
 import * as schema from "#server/database/schema";
 
 export type Database = DrizzleD1Database<typeof schema>;

@@ -1,7 +1,9 @@
 import { env } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { log } from "evlog";
+
 import * as schema from "#server/database/schema";
+
 import { NotesService } from "./notes.service";
 
 const RETENTION_DAYS = 30;

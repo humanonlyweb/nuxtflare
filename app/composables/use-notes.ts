@@ -1,4 +1,4 @@
-import type { CreateNoteInput } from "#shared/utils/notes.schema";
+import type { CreateNoteInput } from "#shared/utils/schema-validation/notes.schema";
 
 export function useNotes() {
   const { data, pending, error, refresh } = useFetch("/api/notes", {

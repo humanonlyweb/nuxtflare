@@ -39,7 +39,7 @@ The app ships with a **notes** demo feature wired end to end (including a schedu
 `notes:prune` task). To remove it cleanly — so the build stays green — delete:
 
 - `server/features/notes/`, `server/api/notes/`, `server/database/schema/notes.ts`
-- `shared/utils/notes.schema.ts`
+- `shared/utils/schema-validation/notes.schema.ts` (and its re-export in `schema-validation/index.ts`)
 - `app/components/notes/`, `app/composables/use-notes.ts`, and the notes UI in `app/pages/index.vue`
 
 then remove its wiring: the `notesController` getter in `server/utils/container.ts`,
@@ -83,7 +83,9 @@ server/
   database/helpers.ts    # reusable id()/createdAt()/updatedAt() columns
   types/env.d.ts         # Cloudflare binding types (kept in sync with wrangler.jsonc)
   utils/                 # container, drizzle, error, validation, cache
-shared/utils/            # Zod schemas + helpers shared by client & server
+shared/utils/
+  schema-validation/     # Zod schemas (<feature>.schema.ts) + barrel, shared client & server
+  id-gen.ts              # prefixed-id generator + shape (single source for randomId/idSchema)
 ```
 
 ## Architecture

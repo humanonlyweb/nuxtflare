@@ -1,5 +1,7 @@
-import { createNoteSchema, noteIdSchema, updateNoteSchema } from "#shared/utils/notes.schema";
 import type { H3Event } from "h3";
+
+import { createNoteSchema, noteIdSchema, updateNoteSchema } from "#shared/utils/schema-validation";
+
 import type { NotesService } from "./notes.service";
 
 export class NotesController {

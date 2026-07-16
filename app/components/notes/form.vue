@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { createNoteSchema, type CreateNoteInput } from "#shared/utils/notes.schema";
+import {
+  createNoteSchema,
+  type CreateNoteInput,
+} from "#shared/utils/schema-validation/notes.schema";
 
 const { pending = false } = defineProps<{ pending?: boolean }>();
 const emit = defineEmits<{ submit: [input: CreateNoteInput] }>();

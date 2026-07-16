@@ -1,6 +1,8 @@
 import { desc, eq, lt } from "drizzle-orm";
-import type { CreateNoteInput, UpdateNoteInput } from "#shared/utils/notes.schema";
+
 import { notes } from "#server/database/schema";
+import type { CreateNoteInput, UpdateNoteInput } from "#shared/utils/schema-validation";
+
 import type { Note } from "./notes.type";
 
 export class NotesService {

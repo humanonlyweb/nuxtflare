@@ -1,6 +1,7 @@
+import type { H3Event } from "h3";
+
 import { NotesController } from "#server/features/notes/notes.controller";
 import { NotesService } from "#server/features/notes/notes.service";
-import type { H3Event } from "h3";
 
 // Single source of truth for dependency injection. Lighter than a full DI framework.
 // The db is built lazily so a request only constructs what it hits.

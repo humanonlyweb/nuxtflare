@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { IDConfig, prefixes, type IDPrefix } from "./id-gen";
+
+import { IDConfig, prefixes, type IDPrefix } from "../id-gen";
 
 const buildIdPattern = (prefix: string): RegExp =>
   new RegExp(`^${prefix}_[${IDConfig.alphabet}]{${IDConfig.length}}$`);
