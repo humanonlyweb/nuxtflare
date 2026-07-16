@@ -1,37 +1,52 @@
-import { desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 
 import { notes } from "#server/database/schema";
 import type { CreateNoteInput, UpdateNoteInput } from "#shared/utils/schema-validation";
 
-import type { Note } from "./notes.type";
+import type { Note, NoteRef } from "./notes.type";
 
 export class NotesService {
   constructor(private readonly db: Database) {}
 
-  list(): Promise<Note[]> {
-    return this.db.select().from(notes).orderBy(desc(notes.createdAt));
+  list(userId: string): Promise<Note[]> {
+    return this.db
+      .select()
+      .from(notes)
+      .where(eq(notes.userId, userId))
+      .orderBy(desc(notes.createdAt));
   }
 
-  async getById(id: string): Promise<Note> {
-    const [note] = await this.db.select().from(notes).where(eq(notes.id, id)).limit(1);
+  async getById({ id, userId }: NoteRef): Promise<Note> {
+    const [note] = await this.db
+      .select()
+      .from(notes)
+      .where(and(eq(notes.id, id), eq(notes.userId, userId)))
+      .limit(1);
     if (!note) throw Errors.notFound("Note");
     return note;
   }
 
-  async create(input: CreateNoteInput): Promise<Note> {
-    const [note] = await this.db.insert(notes).values(input).returning();
+  async create({ input, userId }: { input: CreateNoteInput; userId: string }): Promise<Note> {
+    const [note] = await this.db
+      .insert(notes)
+      .values({ ...input, userId })
+      .returning();
     return note!;
   }
 
-  async update(id: string, input: UpdateNoteInput): Promise<Note> {
-    await this.getById(id);
-    const [note] = await this.db.update(notes).set(input).where(eq(notes.id, id)).returning();
+  async update({ id, userId, input }: NoteRef & { input: UpdateNoteInput }): Promise<Note> {
+    await this.getById({ id, userId });
+    const [note] = await this.db
+      .update(notes)
+      .set(input)
+      .where(and(eq(notes.id, id), eq(notes.userId, userId)))
+      .returning();
     return note!;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.getById(id);
-    await this.db.delete(notes).where(eq(notes.id, id));
+  async remove({ id, userId }: NoteRef): Promise<void> {
+    await this.getById({ id, userId });
+    await this.db.delete(notes).where(and(eq(notes.id, id), eq(notes.userId, userId)));
   }
 
   async pruneOlderThan(days: number): Promise<number> {

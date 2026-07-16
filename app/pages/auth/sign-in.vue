@@ -3,6 +3,9 @@ definePageMeta({ middleware: "guest" });
 
 const route = useRoute();
 
+const redirectCookie = useCookie(AUTH_REDIRECT_COOKIE, { maxAge: 600, sameSite: "lax" });
+redirectCookie.value = safeRedirectPath(route.query.redirect) ?? null;
+
 useSeoMeta({
   title: "Sign in — humanonlyweb starter",
   description: "Sign in with GitHub or Google.",

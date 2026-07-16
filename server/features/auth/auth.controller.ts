@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 
 import type { EmailService } from "#server/features/email/email.service";
+import { AUTH_REDIRECT_COOKIE, safeRedirectPath } from "#shared/utils/links";
 
 import type { AuthService } from "./auth.service";
 import type { OAuthIdentity } from "./auth.type";
@@ -13,6 +14,9 @@ export class AuthController {
   ) {}
 
   async oauthSuccess(event: H3Event, identity: OAuthIdentity) {
+    const redirect = safeRedirectPath(getCookie(event, AUTH_REDIRECT_COOKIE));
+    deleteCookie(event, AUTH_REDIRECT_COOKIE);
+
     try {
       const { user, linked, isNew } = await this.auth.findOrCreateByOAuth(identity);
       await setUserSession(event, { user });
@@ -21,7 +25,7 @@ export class AuthController {
         event.waitUntil(this.email.sendWelcome({ to: user.email, name: user.name }));
       }
 
-      return sendRedirect(event, linked ? `/?linked=${identity.provider}` : "/");
+      return sendRedirect(event, redirect ?? (linked ? `/?linked=${identity.provider}` : "/"));
     } catch (error) {
       if (error instanceof UnverifiedOAuthEmailError) {
         return sendRedirect(event, "/auth/sign-in?error=oauth-unverified");

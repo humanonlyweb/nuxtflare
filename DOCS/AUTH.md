@@ -10,7 +10,7 @@ sealed session cookie.
 ```
 /auth/github (or /google) → provider → onSuccess (normalize → OAuthIdentity)
   → authController.oauthSuccess → AuthService.findOrCreateByOAuth
-  → setUserSession → redirect / (or /auth/sign-in?error=… on failure)
+  → setUserSession → redirect (or /auth/sign-in?error=… on failure)
 ```
 
 `findOrCreateByOAuth`:
@@ -21,6 +21,10 @@ sealed session cookie.
 
 Creating or linking needs a **verified** provider email; otherwise
 `UnverifiedOAuthEmailError` → `/auth/sign-in?error=oauth-unverified`.
+
+Concurrent first sign-ins are race-safe: the user insert is `onConflictDoNothing`
+on email with a re-lookup on conflict, and provider links ignore duplicates —
+so a lost race links instead of surfacing a unique-constraint 500.
 
 ## Files
 
@@ -35,6 +39,7 @@ Creating or linking needs a **verified** provider email; otherwise
 | `app/composables/use-auth.ts`               | `useAuth()`                           |
 | `app/pages/auth/sign-in.vue`                | Provider buttons                      |
 | `app/middleware/{auth,guest}.ts`            | Route protection                      |
+| `shared/utils/safe-redirect.ts`             | `?redirect` cookie name + sanitizer   |
 
 ## Setup
 
@@ -61,8 +66,11 @@ Protect pages with named middleware (UI gate only; server handlers must still ca
 definePageMeta({ middleware: "auth" });
 ```
 
-`?redirect` isn't carried through the OAuth round-trip yet — post-login lands on `/`;
-thread it through the provider `state` if you need it.
+`?redirect` survives the OAuth round-trip: the sign-in page stashes it in a
+short-lived `auth_redirect` cookie, and `oauthSuccess` reads (and clears) it,
+accepting only same-site paths via `safeRedirectPath`
+(`shared/utils/safe-redirect.ts` — also used by the `guest` middleware). Without
+it, post-login lands on `/`.
 
 ## Adding a provider
 
