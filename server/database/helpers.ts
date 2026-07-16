@@ -1,8 +1,7 @@
+import type { IDPrefix } from "#shared/utils/id-gen";
+import { randomId } from "#shared/utils/id-gen";
 import { sql } from "drizzle-orm";
 import { integer, text } from "drizzle-orm/sqlite-core";
-// Relative, not `#shared`: drizzle-kit loads this file outside Nuxt (esbuild),
-// where the `#` aliases aren't resolved.
-import { type IDPrefix, randomId } from "../../shared/utils/id-gen";
 
 export const id = (prefix: IDPrefix) =>
   text()

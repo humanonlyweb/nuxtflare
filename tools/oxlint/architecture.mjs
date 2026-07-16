@@ -129,7 +129,7 @@ const noServiceInstantiationOutsideContainer = {
   create(context) {
     const file = fileOf(context);
     if (isContainer(file) || isTask(file)) return {};
-    
+
     return {
       NewExpression(node) {
         const name = calleeName(node);
