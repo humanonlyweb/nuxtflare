@@ -1,5 +1,7 @@
 import type { H3Event } from "h3";
 
+import { AuthController } from "#server/features/auth/auth.controller";
+import { AuthService } from "#server/features/auth/auth.service";
 import { NotesController } from "#server/features/notes/notes.controller";
 import { NotesService } from "#server/features/notes/notes.service";
 
@@ -12,6 +14,9 @@ export function createContainer(event: H3Event) {
   return {
     get notesController() {
       return new NotesController(new NotesService(getDb()));
+    },
+    get authController() {
+      return new AuthController(new AuthService(getDb()));
     },
   };
 }

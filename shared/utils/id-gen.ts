@@ -8,6 +8,7 @@ export const IDConfig = {
 export const prefixes = {
   user: "usr",
   note: "note",
+  oauth: "oauth",
 } as const;
 
 export type IDPrefix = keyof typeof prefixes;
