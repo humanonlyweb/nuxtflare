@@ -1,11 +1,11 @@
-import type { D1Database, Fetcher } from "@cloudflare/workers-types";
+import type { D1Database, Fetcher, SendEmail } from "@cloudflare/workers-types";
 
-// Keep in sync with `wrangler.jsonc` bindings.
 declare global {
   namespace Cloudflare {
     interface Env {
       DB: D1Database;
       ASSETS: Fetcher;
+      EMAIL: SendEmail;
     }
   }
 }
