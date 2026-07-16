@@ -59,10 +59,14 @@ the `notes:prune` `tasks` + `scheduledTasks` entries in `nuxt.config.ts`, and th
 | `bun run db:generate`                  | Generate a Drizzle migration from schema changes |
 | `bun run db:migrate:local` / `:remote` | Apply migrations to D1                           |
 
+> [!NOTE]
 > **Type-checking:** `typecheck` runs `nuxt typecheck`, which needs a Vue type checker
 > (vue-tsc/golar). vue-tsc can't load the pinned TypeScript 7 preview yet, so the current
 > type gate is `bun run lint` (oxlint, type-aware via tsgolint) and CI keeps `typecheck`
-> commented out. Re-enable it once vue-tsc supports TS 7.
+> commented out. Re-enable it once vue-tsc supports TS 7 or downgrade to TS 6 below.
+> See discussion in [#6121](https://github.com/vuejs/language-tools/discussions/6121) and [#5381](https://github.com/vuejs/language-tools/issues/5381)
+>
+> Currently no test files included, Add a `/tests` folder and run `bun test` to start writing tests.
 
 ## Project structure
 

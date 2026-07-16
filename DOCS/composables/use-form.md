@@ -1,10 +1,10 @@
 # useForm
 
-A small, Zod-native form helper — validation, touched/dirty tracking, and submit
+A small, Zod-native form helper with validation, touched/dirty tracking, and submit
 state, with no runtime beyond `klona`. Auto-imported as `useForm` from
 `app/composables/use-form.ts`.
 
-> **Optional.** It covers the common case. Prefer a dedicated form library ala Bring your own.
+> **Optional.** It covers the common case. Prefer a dedicated form library or bring your own.
 
 ## Options
 
