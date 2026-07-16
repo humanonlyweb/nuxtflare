@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["unicorn", "typescript", "oxc", "vue", "vitest"],
+  "jsPlugins": ["./tools/oxlint/architecture.mjs"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
@@ -14,7 +15,11 @@
     "no-restricted-globals": "error",
     "typescript/no-unsafe-assignment": "warn",
     "typescript/no-floating-promises": "error",
-    "typescript/consistent-type-imports": "error"
+    "typescript/consistent-type-imports": "error",
+    "arch/no-db-access-in-controllers": "error",
+    "arch/no-http-in-services": "error",
+    "arch/no-unvalidated-request-reads": "error",
+    "arch/no-service-instantiation-outside-container": "error"
   },
   "overrides": [
     {

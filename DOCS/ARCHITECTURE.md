@@ -48,3 +48,23 @@ Server code is layered **Routes → Controllers → Services**, each with one jo
    (`nitro.tasks` + `scheduledTasks`) with a matching cron in `wrangler.jsonc`
 
 The `notes` feature is a complete worked example of every step.
+
+## Enforcement (lint)
+
+Custom oxlint JS plugin
+(`tools/oxlint/architecture.mjs`, registered via `jsPlugins`) fails the lint on the
+common violations:
+Learn how to write yours at [Writing JS Plugins](https://oxc.rs/docs/guide/usage/linter/writing-js-plugins.html)
+
+- **`arch/no-db-access-in-controllers`** — controllers can't import `drizzle-orm`/schema
+  or call `useDrizzle()`; DB access belongs in the service.
+- **`arch/no-http-in-services`** — services can't import `h3` or call `validate*` /
+  response helpers; HTTP concerns belong in the controller.
+- **`arch/no-unvalidated-request-reads`** — no raw h3 readers (`readBody`, `getQuery`,
+  `getRouterParam`, …) anywhere in `server/`; use the validated wrappers in
+  `server/utils/validation.ts`. (Exempt: `validation.ts` itself.)
+- **`arch/no-service-instantiation-outside-container`** — `new *Service()` /
+  `new *Controller()` is only allowed in `server/utils/container.ts` (and `*.task.ts`,
+  which build their own deps).
+
+Rules self-scope by filename, so they're no-ops elsewhere. Add more as you see fit.
