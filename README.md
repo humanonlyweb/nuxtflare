@@ -60,13 +60,11 @@ the `notes:prune` `tasks` + `scheduledTasks` entries in `nuxt.config.ts`, and th
 | `bun run db:migrate:local` / `:remote` | Apply migrations to D1                           |
 
 > [!NOTE]
-> **Type-checking:** `typecheck` runs `nuxt typecheck`, which needs a Vue type checker
-> (vue-tsc/golar). vue-tsc can't load the pinned TypeScript 7 preview yet, so the current
-> type gate is `bun run lint` (oxlint, type-aware via tsgolint) and CI keeps `typecheck`
-> commented out. Re-enable it once vue-tsc supports TS 7 or downgrade to TS 6 below.
-> See discussion in [#6121](https://github.com/vuejs/language-tools/discussions/6121) and [#5381](https://github.com/vuejs/language-tools/issues/5381)
->
-> Currently no test files included, Add a `/tests` folder and run `bun test` to start writing tests.
+> **Type-checking:** `nuxt typecheck` needs vue-tsc, which can't load the pinned
+> TypeScript 7 preview yet ([#6121](https://github.com/vuejs/language-tools/discussions/6121),
+> [#5381](https://github.com/vuejs/language-tools/issues/5381)), so the type gate is
+> `bun run lint` (oxlint, type-aware via tsgolint) and CI keeps `typecheck` commented out.
+> **Tests:** none included yet — add a `/tests` folder and run `bun test`.
 
 ## Project structure
 
@@ -75,7 +73,8 @@ app/                     # Vue frontend (SFC, <script setup lang="ts">)
   components/ui/*        # shared, presentational UI
   components/<feature>/* # feature-specific components
   composables/*          # kebab-case composables (use-*.ts)
-  layouts/ · pages/
+  layouts/
+  pages/
 server/
   api/<resource>/        # thin route handlers (delegate to a controller)
   features/<feature>/    # <feature>.{type,service,controller}.ts (+ optional .task.ts)
@@ -97,7 +96,7 @@ lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
 ## Forms
 
 A small Zod-native [`useForm`](./DOCS/composables/use-form.md) composable is included
-(validation, touched/dirty tracking, submit state). It's optional — bring your own form library (vee-validate, FormKit, …) if you prefer
+(validation, touched/dirty tracking, submit state). Optional — bring your own (vee-validate, FormKit, …) if you prefer.
 
 ## Deploy
 
