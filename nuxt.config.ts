@@ -23,6 +23,10 @@ export default defineNuxtConfig({
   },
   css: ["~/assets/styles/app.css"],
   runtimeConfig: {
+    email: {
+      fromName: "HumanOnlyWeb",
+      fromAddress: "contact@humanonlyweb.com",
+    },
     public: {
       siteUrl: "",
     },

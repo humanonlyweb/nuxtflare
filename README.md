@@ -1,14 +1,17 @@
 # HumanOnlyWeb — Nuxt 4 + Cloudflare starter
 
-An opinionated, production-shaped template for Nuxt 4 fullstack apps on Cloudflare
-Workers + D1. Click **Use this template** on GitHub, then run the setup script.
+An opinionated (personal!), production-shaped template for Nuxt 4 fullstack apps on Cloudflare
+Workers. Click **Use this template** on GitHub, then run the setup script.
 
 **Stack:**
 
 - Nuxt 4+
-- Vue 3
-- Cloudflare Workers (`cloudflare-module`) · D1
-- Drizzle
+- Cloudflare Workers (`cloudflare-module`)
+  - Email Sending binding
+  - D1 database
+  - R2 storage
+  - KV storage etc
+- DrizzleORM
 - Zod
 - evlog
 - oxlint/oxfmt
@@ -105,6 +108,12 @@ A small Zod-native [`useForm`](./DOCS/composables/use-form.md) composable is inc
 OAuth sign-in (GitHub + Google) via [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils),
 with a `findOrCreateByOAuth` account flow. Copy `.env.example` → `.env` and set the
 session password + provider credentials. See [`DOCS/AUTH.md`](./DOCS/AUTH.md).
+
+## Email
+
+Transactional email via the Cloudflare Email Sending binding, with a welcome email
+on first sign-up and HTML templates in `server/assets/emails/`. See
+[`DOCS/EMAIL.md`](./DOCS/EMAIL.md).
 
 ## Deploy
 

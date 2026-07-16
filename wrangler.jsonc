@@ -24,6 +24,11 @@
       "migrations_dir": "server/database/migrations",
     },
   ],
+  "send_email": [
+    {
+      "name": "EMAIL",
+    },
+  ],
   "triggers": {
     "crons": ["0 3 * * *"], // Ensure this matches the cron schedule in nuxt.config.ts
   },
