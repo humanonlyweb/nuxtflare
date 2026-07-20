@@ -1,3 +1,5 @@
+import { log } from "evlog";
+
 type GitHubEmail = {
   email: string;
   primary: boolean;
@@ -13,8 +15,12 @@ export default defineOAuthGitHubEventHandler({
       headers: {
         Authorization: `Bearer ${tokens.access_token}`,
         Accept: "application/vnd.github+json",
+        "User-Agent": APP_NAME,
       },
-    }).catch(() => [] as GitHubEmail[]);
+    }).catch((error: unknown) => {
+      log.error({ scope: "auth", msg: "github email lookup failed", error });
+      return [] as GitHubEmail[];
+    });
 
     const verifiedPrimary = emails.find((e) => e.primary && e.verified);
     const email = verifiedPrimary?.email ?? user.email ?? "";
