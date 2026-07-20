@@ -217,18 +217,14 @@ const columns: TableColumn<Person>[] = [
           label="Favourite fruit"
           :options="fruitOptions"
           placeholder="Pick one"
-        >
-          <template #check="{ selected }">{{ selected ? "✓" : "" }}</template>
-        </UiSelect>
+        />
         <UiSelect
           v-model="tags"
           label="Tags"
           multiple
           :options="tagOptions"
           placeholder="Pick a few"
-        >
-          <template #check="{ selected }">{{ selected ? "✓" : "" }}</template>
-        </UiSelect>
+        />
 
         <!-- Custom #value and #option slots: fully bespoke rendering. -->
         <UiSelect v-model="status" label="Status (custom slots)" :options="statusOptions">
@@ -242,7 +238,7 @@ const columns: TableColumn<Person>[] = [
           <template #option="{ option, selected }">
             <span class="status-dot" :data-status="option.value" />
             <span class="status-option-label">{{ option.label }}</span>
-            <span v-if="selected" class="status-check">✓</span>
+            <UiIcon v-if="selected" name="check" class="status-check" />
           </template>
         </UiSelect>
       </div>
@@ -323,11 +319,9 @@ const columns: TableColumn<Person>[] = [
 
     <section class="section">
       <h2>Menu</h2>
-      <UiMenu
-        label="Actions ▾"
-        :items="menuItems"
-        @select="(v) => toast.success(`Selected: ${v}`)"
-      />
+      <UiMenu :items="menuItems" @select="(v) => toast.success(`Selected: ${v}`)">
+        <template #trigger>Actions <UiIcon name="chevron-down" /></template>
+      </UiMenu>
     </section>
 
     <section class="section">
@@ -399,21 +393,12 @@ const columns: TableColumn<Person>[] = [
       <h2>Accordion</h2>
       <UiAccordion v-model="faq">
         <UiAccordionItem value="shipping" title="How fast is shipping?">
-          <template #indicator="{ open }">
-            <span class="chevron" :data-open="open || undefined">▾</span>
-          </template>
           <p>Orders placed before 2pm ship the same day, anywhere in the country.</p>
         </UiAccordionItem>
         <UiAccordionItem value="returns" title="Can I return an item?">
-          <template #indicator="{ open }">
-            <span class="chevron" :data-open="open || undefined">▾</span>
-          </template>
           <p>Thirty days, no questions asked — as long as the tags are still on.</p>
         </UiAccordionItem>
         <UiAccordionItem value="support" title="How do I reach support?">
-          <template #indicator="{ open }">
-            <span class="chevron" :data-open="open || undefined">▾</span>
-          </template>
           <p>Email us, or open a chat from the dashboard. We answer within a day.</p>
           <UiButton size="small" variant="secondary" @click="toast.success('Chat opened.')">
             Start a chat
@@ -424,15 +409,9 @@ const columns: TableColumn<Person>[] = [
       <!-- multiple: several panels open at once. -->
       <UiAccordion v-model="sections" multiple>
         <UiAccordionItem value="general" title="General">
-          <template #indicator="{ open }">
-            <span class="chevron" :data-open="open || undefined">▾</span>
-          </template>
           <UiSwitch v-model="emailAlerts" label="Email notifications" />
         </UiAccordionItem>
         <UiAccordionItem value="appearance" title="Appearance">
-          <template #indicator="{ open }">
-            <span class="chevron" :data-open="open || undefined">▾</span>
-          </template>
           <UiSwitch v-model="compactLayout" label="Compact layout" />
         </UiAccordionItem>
       </UiAccordion>
@@ -763,6 +742,19 @@ const columns: TableColumn<Person>[] = [
 [data-select-placeholder] {
   color: var(--text-muted);
 }
+[data-part="chevron"] {
+  display: inline-flex;
+  color: var(--text-muted);
+  transition: transform 200ms var(--ease-out);
+}
+[data-select-open] > [data-part="chevron"] {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-part="chevron"] {
+    transition: none;
+  }
+}
 [data-part="listbox"] {
   padding: 6px;
   background: var(--surface);
@@ -789,6 +781,7 @@ const columns: TableColumn<Person>[] = [
   cursor: not-allowed;
 }
 [data-part="option-check"] {
+  display: flex;
   width: 1rem;
   color: var(--accent);
 }
@@ -889,16 +882,16 @@ const columns: TableColumn<Person>[] = [
   color: var(--text-muted);
 }
 
-.chevron {
-  display: inline-block;
+[data-part="accordion-indicator"] {
+  display: inline-flex;
   color: var(--text-muted);
   transition: transform 200ms var(--ease-out);
 }
-.chevron[data-open] {
+[data-accordion-open] > [data-part="accordion-indicator"] {
   transform: rotate(180deg);
 }
 @media (prefers-reduced-motion: reduce) {
-  .chevron {
+  [data-part="accordion-indicator"] {
     transition: none;
   }
 }
@@ -1111,6 +1104,7 @@ const columns: TableColumn<Person>[] = [
   color: var(--text-muted);
 }
 [data-part="close"] {
+  display: inline-flex;
   padding: 0.2rem 0.45rem;
   color: var(--text-muted);
   background: none;
@@ -1182,6 +1176,7 @@ th[data-part="cell"] {
   font-size: 0.9rem;
 }
 [data-part="toast-close"] {
+  display: inline-flex;
   color: var(--text-muted);
   background: none;
   border: none;

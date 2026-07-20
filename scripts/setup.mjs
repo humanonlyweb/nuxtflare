@@ -1,11 +1,8 @@
 // oxlint-disable no-console, typescript/no-unsafe-assignment
-import { readFile, unlink, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
 
-// Guard: only run against the untouched template. Once the package name has been
-// changed, this refuses to run — so a second run (or running it inside a real
-// project) can't rewrite anything.
 const pkg = await readFile("package.json", "utf8");
 if (!/"name":\s*"template"/.test(pkg)) {
   console.error(
@@ -25,6 +22,7 @@ const toSlug = (s) =>
 
 const name = toSlug(await rl.question("App name (kebab-case): "));
 const domain = (await rl.question("Production domain (blank to skip): ")).trim();
+const dropNotes = !/^n/i.test((await rl.question("Remove the demo notes feature? [Y/n]: ")).trim());
 rl.close();
 
 if (!name) {
@@ -32,9 +30,46 @@ if (!name) {
   process.exit(1);
 }
 
-async function edit(path, fn) {
-  await writeFile(path, fn(await readFile(path, "utf8")));
+const warnings = [];
+
+const HOME_PAGE = `<script setup lang="ts">
+useSeoMeta({ title: "__APP_NAME__" });
+</script>
+
+<template>
+  <div class="page">
+    <h1>__APP_NAME__</h1>
+    <p>Your app starts here.</p>
+  </div>
+</template>
+
+<style scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--text-muted);
+}
+</style>
+`;
+
+async function edit(path, fn) {
+  const before = await readFile(path, "utf8");
+  const after = fn(before);
+  if (after === before) warnings.push(`no change applied to ${path}`);
+  await writeFile(path, after);
+}
+
+const del = (path) => rm(path, { recursive: true, force: true });
 
 await edit("package.json", (s) => s.replace(/"name":\s*"template"/, `"name": "${name}"`));
 await edit("nuxt.config.ts", (s) =>
@@ -50,7 +85,6 @@ await edit("server/utils/constant.ts", (s) =>
   s.replace(/APP_NAME = "template"/, `APP_NAME = "${name}"`),
 );
 await edit("app/layouts/default.vue", (s) => s.replaceAll("humanonlyweb", name));
-await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
 await edit("app/pages/auth/sign-in.vue", (s) => s.replaceAll("humanonlyweb starter", name));
 await edit("wrangler.jsonc", (s) =>
   s
@@ -60,16 +94,69 @@ await edit("wrangler.jsonc", (s) =>
 );
 await edit(".github/workflows/ci.yml", (s) => s.replaceAll("template-db", `${name}-db`));
 
+if (dropNotes) {
+  await Promise.all(
+    [
+      "app/components/notes",
+      "app/composables/use-notes.ts",
+      "server/api/notes",
+      "server/features/notes",
+      "server/database/schema/notes.ts",
+      "shared/utils/schema-validation/notes.schema.ts",
+      // Regenerated below: the shipped migration creates the notes table.
+      "server/database/migrations",
+    ].map(del),
+  );
+
+  await edit("server/database/schema/index.ts", (s) =>
+    s.replace(/^export \* from "\.\/notes";\r?\n/m, ""),
+  );
+  await edit("shared/utils/schema-validation/index.ts", (s) =>
+    s.replace(/^export \* from "\.\/notes\.schema";\r?\n/m, "export {};\n"),
+  );
+  await edit("shared/utils/id-gen.ts", (s) => s.replace(/^ *note: "note",\r?\n/m, ""));
+  await edit("server/utils/container.ts", (s) =>
+    s
+      .replace(
+        /^import \{ Notes(Controller|Service) \} from "#server\/features\/notes\/.*\r?\n/gm,
+        "",
+      )
+      .replace(/^([ \t]*)get notesController\(\) \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
+  );
+  await edit("nuxt.config.ts", (s) =>
+    s
+      .replace(/^ *experimental: \{ tasks: true \},\r?\n/m, "")
+      .replace(/^([ \t]*)tasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, "")
+      .replace(/^([ \t]*)scheduledTasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
+  );
+  await edit("server/utils/cache.ts", (s) =>
+    s.replaceAll("/api/notes", "/api/things").replaceAll("apinotes", "apithings"),
+  );
+  await writeFile("app/pages/index.vue", HOME_PAGE.replaceAll("__APP_NAME__", name));
+} else {
+  await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
+}
+
 // One-shot: drop the npm script and delete this file so it can't run again.
 await edit("package.json", (s) => s.replace(/^.*"setup":.*scripts\/setup\.mjs.*\r?\n/m, ""));
-await unlink("scripts/setup.mjs");
+await Promise.all(["scripts/setup.mjs", "app/pages/components.vue"].map(del));
 
-console.log(`\n✔ Renamed project to "${name}". (setup script removed)\n`);
-console.log("Next:");
+console.log(`\n✔ Renamed project to "${name}".`);
+console.log(
+  "  Removed: setup script, /components demo page" + (dropNotes ? ", notes feature" : ""),
+);
+for (const w of warnings) console.log(`  ! ${w} — check it by hand`);
+
+console.log("\nNext:");
 if (!domain) {
   console.log("  • Set a domain in wrangler.jsonc `routes` (or remove it for *.workers.dev)");
 }
 console.log(`  • bunx wrangler d1 create ${name}-db`);
 console.log("  • Paste the returned database_id into wrangler.jsonc (REPLACE_WITH_D1_DATABASE_ID)");
 console.log("  • grep -ri humanonlyweb . for any branding this script missed");
-console.log("  • bun run db:migrate:local  &&  bun run dev");
+if (dropNotes) {
+  console.log("  • DOCS/ still uses `notes` as its worked example — read it, then trim");
+  console.log("  • bun run db:generate  &&  bun run db:migrate:local  &&  bun run dev");
+} else {
+  console.log("  • bun run db:migrate:local  &&  bun run dev");
+}

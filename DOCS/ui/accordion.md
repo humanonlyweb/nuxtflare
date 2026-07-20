@@ -24,11 +24,11 @@ with `multiple`, a `string[]`.
 | `disabled` | `boolean`               | `false` |                                            |
 | `level`    | `2 \| 3 \| 4 \| 5 \| 6` | `3`     | Heading level wrapping the trigger         |
 
-| Slot        | Props      | Purpose                           |
-| ----------- | ---------- | --------------------------------- |
-| `default`   | —          | Panel content                     |
-| `title`     | `{ open }` | Replaces the header text          |
-| `indicator` | `{ open }` | Chevron / icon slot in the header |
+| Slot        | Props      | Purpose                                                     |
+| ----------- | ---------- | ----------------------------------------------------------- |
+| `default`   | —          | Panel content                                               |
+| `title`     | `{ open }` | Replaces the header text                                    |
+| `indicator` | `{ open }` | Header indicator (default `<UiIcon name="chevron-down" />`) |
 
 ## Styling hooks
 
@@ -48,9 +48,6 @@ keep the grid item padding-free; it's mechanism, not a styling hook.
 ```vue
 <UiAccordion v-model="openSection">
   <UiAccordionItem value="shipping" title="How fast is shipping?">
-    <template #indicator="{ open }">
-      <span class="chevron" :data-open="open || undefined">▾</span>
-    </template>
     <p>Orders placed before 2pm ship the same day.</p>
   </UiAccordionItem>
 </UiAccordion>

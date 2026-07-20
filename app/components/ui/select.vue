@@ -121,7 +121,7 @@ const displayLabel = computed(() => {
           </slot>
         </span>
         <span data-part="chevron" aria-hidden="true">
-          <slot name="chevron">▾</slot>
+          <slot name="chevron"><UiIcon name="chevron-down" /></slot>
         </span>
       </button>
 
@@ -160,7 +160,9 @@ const displayLabel = computed(() => {
                 :index="i"
               >
                 <span data-part="option-check" aria-hidden="true">
-                  <slot name="check" :selected="isSelected(opt.value)" />
+                  <slot name="check" :selected="isSelected(opt.value)">
+                    <UiIcon v-if="isSelected(opt.value)" name="check" />
+                  </slot>
                 </span>
                 <span data-part="option-label">{{ opt.label }}</span>
               </slot>

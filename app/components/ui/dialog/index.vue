@@ -92,7 +92,7 @@ function onCancel(event: Event) {
             aria-label="Close"
             @click="close"
           >
-            <slot name="close-icon">✕</slot>
+            <slot name="close-icon"><UiIcon name="x" /></slot>
           </button>
         </header>
 

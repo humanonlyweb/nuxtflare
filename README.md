@@ -26,21 +26,34 @@ bun install
 # (optional) Update dependencies to latest versions
 bun upgrade
 
-# 2. Rename the project (package name, wrangler, evlog service, domain).
-#    One-time: it guards against re-runs and removes itself when done.
+# 2. Rename the project (package name, wrangler, evlog service, domain) and
+#    optionally strip the demo code. One-time: it guards against re-runs and
+#    removes itself when done.
 bun run setup
 
 # 3. Create the D1 database and paste its id into wrangler.jsonc
 bunx wrangler d1 create <your-app>-db
 
 # 4. Apply migrations to the local D1 and start the dev server
+#    (run `bun run db:generate` first if setup removed the notes feature)
 bun run db:migrate:local
 bun run dev
 ```
 
+Step 2 asks three questions:
+
+```
+$ bun run setup
+App name (kebab-case): my-app
+Production domain (blank to skip): myapp.com
+Remove the demo notes feature? [Y/n]: y
+```
+
 The app ships with a **notes** demo feature wired end to end — the authorization worked
-example the docs refer back to. Sign in (OAuth, below) to use it, or delete it once you've
-read how it works.
+example the docs refer back to. Sign in (OAuth, below) to use it. Answering `y` above
+deletes it whole (components, composable, API routes, feature layer, schema, Zod schema,
+scheduled prune task, migrations and the home page); answer `n` to keep it as a working
+reference and delete it yourself later.
 
 ## Scripts
 

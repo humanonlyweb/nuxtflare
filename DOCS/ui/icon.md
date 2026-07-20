@@ -3,9 +3,10 @@
 Renders one symbol from the SVG sprite. Auto-imported as `<UiIcon>` from
 `app/components/ui/icon.vue`.
 
-The kit itself has no icon dependency — every other component takes icons as slots.
-`UiIcon` is just the sprite helper this starter ships with; delete it and pass your own
-`<svg>` or an icon library into those slots if you prefer.
+Every other component takes its icons as slots; `UiSelect`, `UiAccordionItem`, `UiDialog`
+and `UiToast` default those slots to `UiIcon` (`chevron-down`, `check`, `x`) so they look
+right untouched. Override the slot to pass your own `<svg>` or an icon library — replacing
+`UiIcon` outright means updating those four defaults too.
 
 ## Props
 

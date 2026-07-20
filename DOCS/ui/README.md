@@ -46,8 +46,10 @@ Field components (`UiInput`, `UiTextarea`, `UiSelect`) share a `field` family
 (`data-part="field" | "field-label" | "field-message"`, plus `data-field-error` /
 `data-field-tone`) so one set of rules skins all three.
 
-Icons are slots — the kit has no icon dependency. `UiIcon` and the sprite in
-`public/assets/icon-sprite.svg` are a convenience you can delete; see [icon](./icon.md).
+Icons are slots. A few components (`UiSelect`, `UiAccordionItem`, `UiDialog`, `UiToast`)
+default those slots to `UiIcon` so they look right out of the box — override the slot to
+use your own markup, or swap the sprite in `public/assets/icon-sprite.svg`. See
+[icon](./icon.md).
 
 ## Live examples
 

@@ -44,7 +44,7 @@ const panelId = `${uid}-panel`;
           <slot name="title" :open="open">{{ title }}</slot>
         </span>
         <span data-part="accordion-indicator" aria-hidden="true">
-          <slot name="indicator" :open="open" />
+          <slot name="indicator" :open="open"><UiIcon name="chevron-down" /></slot>
         </span>
       </button>
     </component>

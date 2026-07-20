@@ -32,7 +32,9 @@ Emits `select` with the chosen item's `value`. `SelectOption<T>` comes from
 ## Usage
 
 ```vue
-<UiMenu label="Actions ▾" :items="actions" @select="run" />
+<UiMenu :items="actions" @select="run">
+  <template #trigger>Actions <UiIcon name="chevron-down" /></template>
+</UiMenu>
 
 <!-- Custom trigger content -->
 <UiMenu :items="actions" @select="run">

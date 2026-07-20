@@ -33,10 +33,10 @@ cross-request state), capped at the most recent `max` (oldest drops when full).
 
 ### Slots
 
-| Slot         | Purpose                            |
-| ------------ | ---------------------------------- |
-| `icon`       | Per-toast leading icon             |
-| `close-icon` | Dismiss-button glyph (default `✕`) |
+| Slot         | Purpose                                             |
+| ------------ | --------------------------------------------------- |
+| `icon`       | Per-toast leading icon                              |
+| `close-icon` | Dismiss-button icon (default `<UiIcon name="x" />`) |
 
 ## Styling hooks
 
