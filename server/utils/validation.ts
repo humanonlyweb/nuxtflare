@@ -76,6 +76,20 @@ interface FileRules {
 
 type MultipartPart = { name?: string; filename?: string; type?: string; data: Buffer };
 
+const MULTIPART_OVERHEAD_BYTES = 4096;
+
+// readMultipartFormData() buffers every part in memory, so the per-file limits
+// below are already too late. Reject on the declared size before parsing.
+function assertDeclaredSizeWithin(event: H3Event, field: string, maxBytes: number): void {
+  const declared = Number(getRequestHeader(event, "content-length"));
+
+  if (Number.isFinite(declared) && declared > maxBytes + MULTIPART_OVERHEAD_BYTES) {
+    throw Errors.tooLarge("Upload is too large", {
+      errors: { [field]: `Keep the upload under ${formatBytes(maxBytes)}` },
+    });
+  }
+}
+
 function validatePart(part: MultipartPart, field: string, rules: FileRules): UploadedFile {
   const contentType = part.type ?? "";
   if (!rules.allowedTypes.includes(contentType)) {
@@ -100,6 +114,8 @@ function validatePart(part: MultipartPart, field: string, rules: FileRules): Upl
 
 export async function validateFileUpload(event: H3Event, rules: FileRules): Promise<UploadedFile> {
   const field = rules.field ?? "file";
+  assertDeclaredSizeWithin(event, field, rules.maxBytes);
+
   const parts = await readMultipartFormData(event);
   const part = parts?.find((p) => p.name === field && p.filename && p.data.byteLength);
 
@@ -115,6 +131,8 @@ export async function validateFileUploads(
   rules: FileRules & { maxFiles: number; maxTotalBytes?: number },
 ): Promise<UploadedFile[]> {
   const field = rules.field ?? "file";
+  assertDeclaredSizeWithin(event, field, rules.maxTotalBytes ?? rules.maxBytes * rules.maxFiles);
+
   const parts = await readMultipartFormData(event);
   const matched = (parts ?? []).filter((p) => p.name === field && p.filename && p.data.byteLength);
 
