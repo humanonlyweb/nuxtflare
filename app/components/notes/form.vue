@@ -22,7 +22,7 @@ const { form, errors, submit, shouldDisableSubmit, reset } = useForm({
 
 <template>
   <form ref="formRef" :class="$style.form" novalidate @submit="submit">
-    <UiTextField
+    <UiInput
       v-model="form.title"
       name="title"
       label="Title"
