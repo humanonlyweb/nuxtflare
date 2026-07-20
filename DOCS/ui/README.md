@@ -46,7 +46,8 @@ Field components (`UiInput`, `UiTextarea`, `UiSelect`) share a `field` family
 (`data-part="field" | "field-label" | "field-message"`, plus `data-field-error` /
 `data-field-tone`) so one set of rules skins all three.
 
-Icons are slots — the kit has no icon dependency.
+Icons are slots — the kit has no icon dependency. `UiIcon` and the sprite in
+`public/assets/icon-sprite.svg` are a convenience you can delete; see [icon](./icon.md).
 
 ## Live examples
 
@@ -55,19 +56,19 @@ example skin you can copy from.
 
 ## Components
 
-| Component                            | Source            | Docs                            |
-| ------------------------------------ | ----------------- | ------------------------------- |
-| `UiButton`                           | `button.vue`      | [button](./button.md)           |
-| `UiInput`                            | `input.vue`       | [input](./input.md)             |
-| `UiTextarea`                         | `textarea.vue`    | [textarea](./textarea.md)       |
-| `UiCheckbox`                         | `checkbox.vue`    | [checkbox](./checkbox.md)       |
-| `UiSwitch`                           | `switch.vue`      | [switch](./switch.md)           |
-| `UiRadioGroup`                       | `radio-group.vue` | [radio-group](./radio-group.md) |
-| `UiSpinButton`                       | `spin-button.vue` | [spin-button](./spin-button.md) |
-| `UiSelect`                           | `select.vue`      | [select](./select.md)           |
-| `UiMenu`                             | `menu.vue`        | [menu](./menu.md)               |
-| `UiAccordion` (+ `UiAccordionItem`)  | `accordion/`      | [accordion](./accordion.md)     |
-| `UiTooltip`                          | `tooltip.vue`     | [tooltip](./tooltip.md)         |
-| `UiDialog` / `UiDialogConfirm`       | `dialog/`         | [dialog](./dialog.md)           |
-| `UiToast` (+ `useToast`)             | `toast/`          | [toast](./toast.md)             |
-| `UiTable` (+ Header/Row/Cell/Footer) | `table/`          | [table](./table.md)             |
+- [`UiButton`](./button.md)
+- [`UiIconButton`](./icon-button.md)
+- [`UiIcon`](./icon.md)
+- [`UiInput`](./input.md)
+- [`UiTextarea`](./textarea.md)
+- [`UiCheckbox`](./checkbox.md)
+- [`UiSwitch`](./switch.md)
+- [`UiRadioGroup`](./radio-group.md)
+- [`UiSpinButton`](./spin-button.md)
+- [`UiSelect`](./select.md)
+- [`UiMenu`](./menu.md)
+- [`UiAccordion`](./accordion.md) (+ `UiAccordionItem`)
+- [`UiTooltip`](./tooltip.md)
+- [`UiDialog`](./dialog.md) (+ `UiDialogConfirm`)
+- [`UiToast`](./toast.md) (+ `useToast`)
+- [`UiTable`](./table.md) (+ Header/Row/Cell/Footer)

@@ -88,8 +88,6 @@ const panelId = `${uid}-panel`;
   overflow: hidden;
 }
 
-/* Hand overflow back once expanded so focus rings inside the panel aren't clipped.
-   A discrete property flips halfway, so the delay pushes it to the end of the open. */
 [data-accordion-open] > [data-part="accordion-clip"] {
   overflow: visible;
   transition: overflow 1ms 219ms allow-discrete;

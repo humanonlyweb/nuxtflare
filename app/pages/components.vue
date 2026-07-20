@@ -147,6 +147,23 @@ const columns: TableColumn<Person>[] = [
     </section>
 
     <section class="section">
+      <h2>Icon button</h2>
+      <div class="row">
+        <UiIconButton label="Edit"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Edit" variant="secondary"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Edit" variant="primary"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Delete" variant="danger"><UiIcon name="trash" /></UiIconButton>
+      </div>
+      <div class="row">
+        <UiIconButton label="Edit" size="small"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Edit" size="medium"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Edit" size="large"><UiIcon name="pencil" /></UiIconButton>
+        <UiIconButton label="Saving" loading />
+        <UiIconButton label="Edit" disabled><UiIcon name="pencil" /></UiIconButton>
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Input</h2>
       <div class="grid">
         <UiInput
@@ -425,7 +442,7 @@ const columns: TableColumn<Person>[] = [
   </div>
 </template>
 
-<style scoped>
+<style>
 .components {
   display: flex;
   flex-direction: column;
@@ -516,7 +533,7 @@ const columns: TableColumn<Person>[] = [
    rewrite freely — none of it lives inside the components. */
 
 /* Button */
-.components :deep([data-part="button"]) {
+[data-part="button"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -532,39 +549,57 @@ const columns: TableColumn<Person>[] = [
   cursor: pointer;
   text-decoration: none;
 }
-.components :deep([data-button-size="small"]) {
+[data-button-size="small"] {
   padding: 0.4rem 0.7rem;
   font-size: 0.85rem;
 }
-.components :deep([data-button-size="large"]) {
+[data-button-size="large"] {
   padding: 0.75rem 1.25rem;
   font-size: 1.05rem;
 }
-.components :deep([data-button-variant="secondary"]) {
+[data-button-variant="secondary"] {
   color: var(--text);
   background: var(--surface);
   border-color: var(--border);
 }
-.components :deep([data-button-variant="ghost"]) {
+[data-button-variant="ghost"] {
   color: var(--text);
   background: transparent;
   border-color: var(--border);
 }
-.components :deep([data-button-variant="danger"]) {
+[data-button-variant="danger"] {
   color: var(--danger);
   background: transparent;
   border-color: color-mix(in oklch, var(--danger) 40%, transparent);
 }
-.components :deep([data-button-variant="link"]) {
+[data-button-variant="link"] {
   padding: 0;
   color: var(--accent);
   background: transparent;
 }
-.components :deep([data-button-disabled]) {
+[data-button-disabled] {
   opacity: 0.55;
   cursor: not-allowed;
 }
-.components :deep([data-part="button-spinner"]) {
+[data-button-icon-only] {
+  padding: 0.55rem;
+  aspect-ratio: 1;
+}
+[data-button-icon-only][data-button-size="small"] {
+  padding: 0.4rem;
+}
+[data-button-icon-only][data-button-size="large"] {
+  padding: 0.75rem;
+}
+
+/* Icon */
+[data-part="icon"] {
+  width: var(--icon-size, 1em);
+  height: var(--icon-size, 1em);
+  flex: none;
+}
+
+[data-part="button-spinner"] {
   width: 0.85em;
   height: 0.85em;
   border: 2px solid currentColor;
@@ -579,37 +614,37 @@ const columns: TableColumn<Person>[] = [
 }
 
 /* Fields (input / textarea / select share these) */
-.components :deep([data-part="field"]) {
+[data-part="field"] {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
 }
-.components :deep([data-part="field-label"]) {
+[data-part="field-label"] {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
 }
-.components :deep([data-part="field-optional"]) {
+[data-part="field-optional"] {
   font-weight: 400;
   opacity: 0.7;
 }
-.components :deep([data-field-tone="error"]) {
+[data-field-tone="error"] {
   font-size: 0.8rem;
   color: var(--danger);
 }
-.components :deep([data-field-tone="hint"]) {
+[data-field-tone="hint"] {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
 
-.components :deep([data-part="input-control"]) {
+[data-part="input-control"] {
   position: relative;
   display: flex;
   align-items: center;
 }
-.components :deep([data-part="input"]),
-.components :deep([data-part="textarea"]),
-.components :deep([data-part="trigger"]) {
+[data-part="input"],
+[data-part="textarea"],
+[data-part="trigger"] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font: inherit;
@@ -619,53 +654,53 @@ const columns: TableColumn<Person>[] = [
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
-.components :deep([data-part="textarea"]) {
+[data-part="textarea"] {
   resize: vertical;
   min-height: 5rem;
 }
 /* Drop the native number spinner so it doesn't collide with the suffix. */
-.components :deep([data-part="input"][type="number"]) {
+[data-part="input"][type="number"] {
   appearance: textfield;
 }
-.components :deep([data-part="input"]::-webkit-inner-spin-button),
-.components :deep([data-part="input"]::-webkit-outer-spin-button) {
+[data-part="input"]::-webkit-inner-spin-button,
+[data-part="input"]::-webkit-outer-spin-button {
   appearance: none;
   margin: 0;
 }
-.components :deep([data-part="input"]:focus-visible),
-.components :deep([data-part="textarea"]:focus-visible),
-.components :deep([data-part="trigger"]:focus-visible),
-.components :deep([data-select-open]) {
+[data-part="input"]:focus-visible,
+[data-part="textarea"]:focus-visible,
+[data-part="trigger"]:focus-visible,
+[data-select-open] {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--ring);
 }
-.components :deep([data-input-error]),
-.components :deep([data-textarea-error]),
-.components :deep([data-select-error]) {
+[data-input-error],
+[data-textarea-error],
+[data-select-error] {
   border-color: var(--danger);
 }
-.components :deep([data-input-has-prefix]) {
+[data-input-has-prefix] {
   padding-inline-start: 1.75rem;
 }
-.components :deep([data-input-has-suffix]) {
+[data-input-has-suffix] {
   padding-inline-end: 3rem;
 }
-.components :deep([data-part="input-prefix"]),
-.components :deep([data-part="input-suffix"]) {
+[data-part="input-prefix"],
+[data-part="input-suffix"] {
   position: absolute;
   color: var(--text-muted);
   pointer-events: none;
 }
-.components :deep([data-part="input-prefix"]) {
+[data-part="input-prefix"] {
   inset-inline-start: 0.75rem;
 }
-.components :deep([data-part="input-suffix"]) {
+[data-part="input-suffix"] {
   inset-inline-end: 0.75rem;
 }
 
 /* Switch */
-.components :deep([data-part="switch"]) {
+[data-part="switch"] {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -674,11 +709,11 @@ const columns: TableColumn<Person>[] = [
   border: none;
   cursor: pointer;
 }
-.components :deep([data-part="switch"][disabled]) {
+[data-part="switch"][disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.components :deep([data-part="track"]) {
+[data-part="track"] {
   display: inline-flex;
   align-items: center;
   width: 40px;
@@ -688,36 +723,36 @@ const columns: TableColumn<Person>[] = [
   border-radius: 999px;
   transition: background-color 0.15s ease;
 }
-.components :deep([data-switch-size="small"] [data-part="track"]) {
+[data-switch-size="small"] [data-part="track"] {
   width: 32px;
   height: 18px;
 }
-.components :deep([data-part="thumb"]) {
+[data-part="thumb"] {
   width: 18px;
   height: 18px;
   background: var(--surface);
   border-radius: 50%;
 }
-.components :deep([data-switch-size="small"] [data-part="thumb"]) {
+[data-switch-size="small"] [data-part="thumb"] {
   width: 12px;
   height: 12px;
 }
-.components :deep([data-switch-checked] [data-part="track"]) {
+[data-switch-checked] [data-part="track"] {
   background: var(--accent);
 }
-.components :deep([data-switch-checked] [data-part="thumb"]) {
+[data-switch-checked] [data-part="thumb"] {
   transform: translateX(16px);
 }
-.components :deep([data-switch-size="small"][data-switch-checked] [data-part="thumb"]) {
+[data-switch-size="small"][data-switch-checked] [data-part="thumb"] {
   transform: translateX(14px);
 }
-.components :deep([data-part="switch-label"]) {
+[data-part="switch-label"] {
   font-size: 0.9rem;
   color: var(--text);
 }
 
 /* Select */
-.components :deep([data-part="trigger"]) {
+[data-part="trigger"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -725,17 +760,17 @@ const columns: TableColumn<Person>[] = [
   cursor: pointer;
   text-align: start;
 }
-.components :deep([data-select-placeholder]) {
+[data-select-placeholder] {
   color: var(--text-muted);
 }
-.components :deep([data-part="listbox"]) {
+[data-part="listbox"] {
   padding: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
 }
-.components :deep([data-part="option"]) {
+[data-part="option"] {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -743,43 +778,43 @@ const columns: TableColumn<Person>[] = [
   border-radius: 6px;
   cursor: pointer;
 }
-.components :deep([data-part="option"][data-select-active]) {
+[data-part="option"][data-select-active] {
   background: color-mix(in oklch, var(--accent) 14%, transparent);
 }
-.components :deep([data-part="option"][aria-selected="true"]) {
+[data-part="option"][aria-selected="true"] {
   font-weight: 600;
 }
-.components :deep([data-part="option"][aria-disabled]) {
+[data-part="option"][aria-disabled] {
   color: var(--text-muted);
   cursor: not-allowed;
 }
-.components :deep([data-part="option-check"]) {
+[data-part="option-check"] {
   width: 1rem;
   color: var(--accent);
 }
-.components :deep([data-part="option-label"]) {
+[data-part="option-label"] {
   flex: 1;
 }
 
 /* Spin button */
-.components :deep([data-part="spinbutton"]) {
+[data-part="spinbutton"] {
   display: flex;
   align-items: stretch;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
 }
-.components :deep([data-part="spinbutton"]:focus-within) {
+[data-part="spinbutton"]:focus-within {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--ring);
 }
-.components :deep([data-spinbutton-error]) {
+[data-spinbutton-error] {
   border-color: var(--danger);
 }
-.components :deep([data-spinbutton-disabled]) {
+[data-spinbutton-disabled] {
   opacity: 0.5;
 }
-.components :deep([data-part="spinbutton-input"]) {
+[data-part="spinbutton-input"] {
   flex: 1;
   min-width: 0;
   padding: 0.6rem 0.25rem;
@@ -792,8 +827,8 @@ const columns: TableColumn<Person>[] = [
   border: none;
   outline: none;
 }
-.components :deep([data-part="spinbutton-decrement"]),
-.components :deep([data-part="spinbutton-increment"]) {
+[data-part="spinbutton-decrement"],
+[data-part="spinbutton-increment"] {
   width: 2.5rem;
   font-size: 1.1rem;
   line-height: 1;
@@ -802,26 +837,26 @@ const columns: TableColumn<Person>[] = [
   border: none;
   cursor: pointer;
 }
-.components :deep([data-part="spinbutton-decrement"]:hover:not(:disabled)),
-.components :deep([data-part="spinbutton-increment"]:hover:not(:disabled)) {
+[data-part="spinbutton-decrement"]:hover:not(:disabled),
+[data-part="spinbutton-increment"]:hover:not(:disabled) {
   color: var(--text);
 }
-.components :deep([data-part="spinbutton-decrement"]:disabled),
-.components :deep([data-part="spinbutton-increment"]:disabled) {
+[data-part="spinbutton-decrement"]:disabled,
+[data-part="spinbutton-increment"]:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
 /* Accordion */
-.components :deep([data-part="accordion"]) {
+[data-part="accordion"] {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   overflow: hidden;
 }
-.components :deep([data-part="accordion-item"] + [data-part="accordion-item"]) {
+[data-part="accordion-item"] + [data-part="accordion-item"] {
   border-top: 1px solid var(--border);
 }
-.components :deep([data-part="accordion-trigger"]) {
+[data-part="accordion-trigger"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -837,14 +872,14 @@ const columns: TableColumn<Person>[] = [
   border: none;
   cursor: pointer;
 }
-.components :deep([data-part="accordion-trigger"]:hover) {
+[data-part="accordion-trigger"]:hover {
   background: color-mix(in oklch, var(--text) 4%, transparent);
 }
-.components :deep([data-part="accordion-trigger"]:focus-visible) {
+[data-part="accordion-trigger"]:focus-visible {
   outline: none;
   box-shadow: inset 0 0 0 2px var(--accent);
 }
-.components :deep([data-part="accordion-content"]) {
+[data-part="accordion-content"] {
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -869,24 +904,24 @@ const columns: TableColumn<Person>[] = [
 }
 
 /* Checkbox — hide the native input, style the control box via its pseudo-classes. */
-.components :deep([data-part="checkbox"]) {
+[data-part="checkbox"] {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
 }
-.components :deep([data-part="checkbox"][data-checkbox-disabled]) {
+[data-part="checkbox"][data-checkbox-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.components :deep([data-part="checkbox-input"]) {
+[data-part="checkbox-input"] {
   position: absolute;
   width: 1px;
   height: 1px;
   margin: 0;
   opacity: 0;
 }
-.components :deep([data-part="checkbox-control"]) {
+[data-part="checkbox-control"] {
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -896,41 +931,40 @@ const columns: TableColumn<Person>[] = [
   border: 1px solid var(--border);
   border-radius: 5px;
 }
-.components :deep([data-part="checkbox-input"]:checked + [data-part="checkbox-control"]),
-.components :deep([data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"]) {
+[data-part="checkbox-input"]:checked + [data-part="checkbox-control"],
+[data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"] {
   background: var(--accent);
   border-color: var(--accent);
 }
-.components :deep([data-part="checkbox-input"]:checked + [data-part="checkbox-control"])::after {
+[data-part="checkbox-input"]:checked + [data-part="checkbox-control"]::after {
   content: "✓";
   font-size: 0.75rem;
   line-height: 1;
 }
-.components
-  :deep([data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"])::after {
+[data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"]::after {
   content: "–";
   font-weight: 700;
   line-height: 1;
 }
-.components :deep([data-part="checkbox-input"]:focus-visible + [data-part="checkbox-control"]) {
+[data-part="checkbox-input"]:focus-visible + [data-part="checkbox-control"] {
   outline: none;
   box-shadow: 0 0 0 3px var(--ring);
 }
-.components :deep([data-part="checkbox-label"]) {
+[data-part="checkbox-label"] {
   font-size: 0.9rem;
 }
 
 /* Radio group */
-.components :deep([data-part="radio-group"]) {
+[data-part="radio-group"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-.components :deep([data-part="radio-group"][data-orientation="horizontal"]) {
+[data-part="radio-group"][data-orientation="horizontal"] {
   flex-direction: row;
   gap: 1rem;
 }
-.components :deep([data-part="radio"]) {
+[data-part="radio"] {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -942,11 +976,11 @@ const columns: TableColumn<Person>[] = [
   cursor: pointer;
   text-align: start;
 }
-.components :deep([data-part="radio"]:disabled) {
+[data-part="radio"]:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.components :deep([data-part="radio-control"]) {
+[data-part="radio-control"] {
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -955,17 +989,17 @@ const columns: TableColumn<Person>[] = [
   border: 1px solid var(--border);
   border-radius: 50%;
 }
-.components :deep([data-radio-checked] [data-part="radio-control"]) {
+[data-radio-checked] [data-part="radio-control"] {
   border-color: var(--accent);
 }
-.components :deep([data-radio-checked] [data-part="radio-control"])::after {
+[data-radio-checked] [data-part="radio-control"]::after {
   content: "";
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: var(--accent);
 }
-.components :deep([data-part="radio"]:focus-visible [data-part="radio-control"]) {
+[data-part="radio"]:focus-visible [data-part="radio-control"] {
   outline: none;
   box-shadow: 0 0 0 3px var(--ring);
 }
@@ -988,7 +1022,7 @@ const columns: TableColumn<Person>[] = [
 }
 
 /* Menu */
-.components :deep([data-part="menu-trigger"]) {
+[data-part="menu-trigger"] {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -1001,19 +1035,19 @@ const columns: TableColumn<Person>[] = [
   border-radius: var(--radius-sm);
   cursor: pointer;
 }
-.components :deep([data-part="menu-trigger"]:focus-visible) {
+[data-part="menu-trigger"]:focus-visible {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--ring);
 }
-.components :deep([data-part="menu-list"]) {
+[data-part="menu-list"] {
   padding: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
 }
-.components :deep([data-part="menu-item"]) {
+[data-part="menu-item"] {
   display: flex;
   width: 100%;
   align-items: center;
@@ -1027,16 +1061,16 @@ const columns: TableColumn<Person>[] = [
   cursor: pointer;
   text-align: start;
 }
-.components :deep([data-part="menu-item"][data-menu-active]) {
+[data-part="menu-item"][data-menu-active] {
   background: color-mix(in oklch, var(--accent) 14%, transparent);
 }
-.components :deep([data-part="menu-item"]:disabled) {
+[data-part="menu-item"]:disabled {
   color: var(--text-muted);
   cursor: not-allowed;
 }
 
 /* Tooltip */
-.components :deep([data-part="tooltip"]) {
+[data-part="tooltip"] {
   padding: 4px 8px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -1048,7 +1082,7 @@ const columns: TableColumn<Person>[] = [
 }
 
 /* Dialog */
-.components :deep([data-part="dialog"]) {
+[data-part="dialog"] {
   width: min(440px, calc(100vw - 2rem));
   padding: 0;
   color: var(--text);
@@ -1057,26 +1091,26 @@ const columns: TableColumn<Person>[] = [
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
-.components :deep([data-part="dialog"]::backdrop) {
+[data-part="dialog"]::backdrop {
   background: oklch(0% 0 0 / 0.4);
 }
-.components :deep([data-part="header"]) {
+[data-part="header"] {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   padding: 1.1rem 1.25rem 0.5rem;
 }
-.components :deep([data-part="title"]) {
+[data-part="title"] {
   font-size: 1.15rem;
   font-weight: 700;
 }
-.components :deep([data-part="description"]) {
+[data-part="description"] {
   margin-top: 0.25rem;
   font-size: 0.85rem;
   color: var(--text-muted);
 }
-.components :deep([data-part="close"]) {
+[data-part="close"] {
   padding: 0.2rem 0.45rem;
   color: var(--text-muted);
   background: none;
@@ -1084,10 +1118,10 @@ const columns: TableColumn<Person>[] = [
   border-radius: 6px;
   cursor: pointer;
 }
-.components :deep([data-part="body"]) {
+[data-part="body"] {
   padding: 1rem 1.25rem;
 }
-.components :deep([data-part="footer"]) {
+[data-part="footer"] {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
@@ -1095,24 +1129,24 @@ const columns: TableColumn<Person>[] = [
 }
 
 /* Table */
-.components :deep([data-part="table"]) {
+[data-part="table"] {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
 }
-.components :deep([data-part="caption"]) {
+[data-part="caption"] {
   padding: 0.6rem 0.9rem;
   text-align: start;
   font-size: 0.85rem;
   color: var(--text-muted);
   caption-side: top;
 }
-.components :deep([data-part="cell"]) {
+[data-part="cell"] {
   padding: 0.6rem 0.9rem;
   text-align: start;
   border-bottom: 1px solid var(--border);
 }
-.components :deep(th[data-part="cell"]) {
+th[data-part="cell"] {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -1120,16 +1154,14 @@ const columns: TableColumn<Person>[] = [
   color: var(--text-muted);
   background: color-mix(in oklch, var(--text) 3%, transparent);
 }
-.components :deep([data-table-numeric]) {
+[data-table-numeric] {
   text-align: end;
   font-variant-numeric: tabular-nums;
 }
-.components :deep([data-part="row"]:last-child [data-part="cell"]) {
+[data-part="row"]:last-child [data-part="cell"] {
   border-bottom: none;
 }
-</style>
 
-<style>
 [data-part="toast"] {
   display: flex;
   align-items: center;

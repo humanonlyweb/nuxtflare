@@ -38,19 +38,9 @@ bun run db:migrate:local
 bun run dev
 ```
 
-The app ships with a **notes** demo feature wired end to end (including a scheduled
-`notes:prune` task). Notes are user-scoped: the page sits behind the `auth`
-middleware and the API enforces `requireUserSession` + ownership in the
-controller/service, so the demo doubles as the authorization worked example —
-sign in (OAuth, below) to use it. To remove it cleanly — so the build stays green — delete:
-
-- `server/features/notes/`, `server/api/notes/`, `server/database/schema/notes.ts`
-- `shared/utils/schema-validation/notes.schema.ts` (and its re-export in `schema-validation/index.ts`)
-- `app/components/notes/`, `app/composables/use-notes.ts`, and the notes UI in `app/pages/index.vue`
-
-then remove its wiring: the `notesController` getter in `server/utils/container.ts`,
-the `notes:prune` `tasks` + `scheduledTasks` entries in `nuxt.config.ts`, and the cron in
-`wrangler.jsonc`.
+The app ships with a **notes** demo feature wired end to end — the authorization worked
+example the docs refer back to. Sign in (OAuth, below) to use it, or delete it once you've
+read how it works.
 
 ## Scripts
 
@@ -72,34 +62,13 @@ the `notes:prune` `tasks` + `scheduledTasks` entries in `nuxt.config.ts`, and th
 > `bun run lint` (oxlint, type-aware via tsgolint) and CI keeps `typecheck` commented out.
 > **Tests:** none included yet — add a `/tests` folder and run `bun test`.
 
-## Project structure
-
-```
-app/                     # Vue frontend (SFC, <script setup lang="ts">)
-  components/ui/*        # styleless base UI kit (see DOCS/ui)
-  components/<feature>/* # feature-specific components
-  composables/*          # kebab-case composables (use-*.ts)
-  layouts/
-  pages/
-server/
-  api/<resource>/        # thin route handlers (delegate to a controller)
-  routes/<name>/         # Nitro routes — e.g. OAuth callbacks (auth/github.get.ts)
-  features/<feature>/    # <feature>.{type,service,controller}.ts (+ optional .task.ts)
-  database/schema/       # Drizzle schema (+ generated migrations/)
-  database/helpers.ts    # reusable id()/createdAt()/updatedAt() columns
-  types/env.d.ts         # Cloudflare binding types (kept in sync with wrangler.jsonc)
-  utils/                 # container, drizzle, error, validation, cache
-shared/
-  utils/schema-validation/ # Zod schemas (<feature>.schema.ts) + barrel, shared client & server
-  utils/id-gen.ts          # prefixed-id generator + shape (single source for randomId/idSchema)
-  types/                   # ambient types shared across app + server (e.g. session User)
-```
-
 ## Architecture
 
-Server code follows a strict **Routes → Controllers → Services** layering.
-See [`DOCS/ARCHITECTURE.md`](./DOCS/ARCHITECTURE.md). Component and composable usage
-lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
+Server code follows a strict **Routes → Controllers → Services** layering, enforced by a
+custom oxlint plugin. Project structure, wiring (DI container, validation, errors, tasks,
+authorization, caching) and how to add a feature are in
+[`DOCS/ARCHITECTURE.md`](./DOCS/ARCHITECTURE.md). Component and composable usage lives in
+[`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
 
 ## UI
 
