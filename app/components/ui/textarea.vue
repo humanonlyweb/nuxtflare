@@ -1,89 +1,69 @@
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false });
+
 const {
   label,
-  name,
-  placeholder,
-  required = false,
+  hint,
   error,
-  spellcheck = true,
-  rows = 3,
+  optional = false,
+  disabled = false,
+  rows = 4,
+  id: idProp,
 } = defineProps<{
-  label: string;
-  name?: string;
-  placeholder?: string;
-  required?: boolean;
-  error?: string;
-  spellcheck?: boolean;
+  label?: string;
+  hint?: string;
+  error?: string | boolean;
+  optional?: boolean;
+  disabled?: boolean;
   rows?: number;
+  id?: string;
 }>();
 
-const model = defineModel<string>({ default: "" });
+const model = defineModel<string>();
 
-const id = useId();
-const errorId = computed(() => (error ? `${id}-error` : undefined));
+const { id, hintId, errorId, isError, errorMessage, describedBy } = useField({
+  id: () => idProp,
+  hint: () => hint,
+  error: () => error,
+});
+
+const textareaRef = useTemplateRef("textarea");
+defineExpose({ focus: () => textareaRef.value?.focus() });
 </script>
 
 <template>
-  <div :class="$style.field">
-    <label :for="id">{{ label }}</label>
+  <div data-part="field" :data-field-error="isError || undefined">
+    <label v-if="label" :for="id" data-part="field-label">
+      {{ label }}<span v-if="optional" data-part="field-optional"> (optional)</span>
+    </label>
 
     <textarea
       :id="id"
+      ref="textarea"
       v-model="model"
-      :name="name"
-      :placeholder="placeholder"
-      :required="required"
       :rows="rows"
-      :spellcheck="spellcheck"
-      :aria-invalid="!!error"
-      :aria-describedby="errorId"
+      v-bind="$attrs"
+      :disabled="disabled"
+      :aria-invalid="isError || undefined"
+      :aria-describedby="describedBy"
+      data-part="textarea"
+      :data-textarea-error="isError || undefined"
     />
 
-    <p v-if="error" :id="errorId" :class="$style.error" role="alert">{{ error }}</p>
+    <Transition name="field-message" mode="out-in">
+      <p
+        v-if="errorMessage"
+        :id="errorId"
+        key="error"
+        role="alert"
+        data-part="field-message"
+        data-field-tone="error"
+      >
+        {{ errorMessage }}
+      </p>
+      <p v-else-if="hint" :id="hintId" key="hint" data-part="field-message" data-field-tone="hint">
+        {{ hint }}
+      </p>
+    </Transition>
   </div>
 </template>
-
-<style module>
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.field label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.field textarea {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  font: inherit;
-  font-size: max(1rem, 16px);
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  resize: vertical;
-  min-height: 4.5rem;
-  transition:
-    border-color 0.12s ease,
-    box-shadow 0.12s ease;
-}
-
-.field textarea:focus-visible {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--ring);
-}
-
-.field textarea[aria-invalid="true"] {
-  border-color: var(--danger);
-}
-
-.error {
-  font-size: 0.8rem;
-  color: var(--danger);
-}
-</style>
