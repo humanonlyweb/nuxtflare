@@ -134,7 +134,6 @@ export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
     }
   }
 
-  // Keep the highlight valid if the item list shrinks while open.
   watch(
     () => itemCount.value,
     (len) => {

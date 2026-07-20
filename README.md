@@ -1,7 +1,8 @@
 # HumanOnlyWeb — Nuxt 4 + Cloudflare starter
 
-An opinionated (personal!), production-shaped template for Nuxt 4 fullstack apps on Cloudflare
-Workers. Click **Use this template** on GitHub, then run the setup script.
+An opinionated (PERSONAL), production-shaped template for Nuxt 4+ fullstack apps on Cloudflare
+Workers.
+Click **Use this template** on GitHub, then run the setup script. Remove the part you don't need (notes demo, email, OAuth, etc.) and start building your app.
 
 **Stack:**
 

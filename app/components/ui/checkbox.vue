@@ -17,8 +17,6 @@ const {
   id?: string;
 }>();
 
-// Boolean for a single checkbox, or an array for a checkbox group (native
-// `v-model` on a checkbox adds/removes `value` from the array automatically).
 const model = defineModel<boolean | SelectValue[]>();
 
 defineSlots<{ default(): unknown; indicator(): unknown }>();
@@ -26,9 +24,8 @@ defineSlots<{ default(): unknown; indicator(): unknown }>();
 const uid = useId();
 const id = computed(() => idProp ?? uid);
 
-const inputRef = useTemplateRef<HTMLInputElement>("input");
-// `indeterminate` is a DOM property, not an attribute — reflect the prop onto the
-// element whenever either changes.
+const inputRef = useTemplateRef("input");
+
 watchEffect(() => {
   if (inputRef.value) inputRef.value.indeterminate = indeterminate;
 });
@@ -46,9 +43,11 @@ watchEffect(() => {
       :disabled="disabled"
       v-bind="$attrs"
     />
-    <span data-part="checkbox-control" aria-hidden="true"><slot name="indicator" /></span>
-    <span v-if="$slots.default || label" data-part="checkbox-label"
-      ><slot>{{ label }}</slot></span
-    >
+    <span data-part="checkbox-control" aria-hidden="true">
+      <slot name="indicator" />
+    </span>
+    <span v-if="$slots.default || label" data-part="checkbox-label">
+      <slot>{{ label }}</slot>
+    </span>
   </label>
 </template>
