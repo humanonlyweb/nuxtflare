@@ -2,9 +2,32 @@
 
 Server code is layered **Routes → Controllers → Services**, each with one job.
 
+## Project structure
+
+```sh
+app/                     # Vue frontend (SFC, <script setup lang="ts">)
+  components/ui/*        # styleless base UI kit (see DOCS/ui)
+  components/<feature>/* # feature-specific components
+  composables/*          # kebab-case composables (use-*.ts)
+  layouts/
+  pages/
+server/
+  api/<resource>/        # thin route handlers (delegate to a controller)
+  routes/<name>/         # Nitro routes — e.g. OAuth callbacks (auth/github.get.ts)
+  features/<feature>/    # <feature>.{type,service,controller}.ts (+ optional .task.ts)
+  database/schema/       # Drizzle schema (+ generated migrations/)
+  database/helpers.ts    # reusable id()/createdAt()/updatedAt() columns
+  types/env.d.ts         # Cloudflare binding types (kept in sync with wrangler.jsonc)
+  utils/                 # container, drizzle, error, validation, cache
+shared/
+  utils/schema-validation/ # Zod schemas (<feature>.schema.ts) + barrel, shared client & server
+  utils/id-gen.ts          # prefixed-id generator + shape (single source for randomId/idSchema)
+  types/                   # ambient types shared across app + server (e.g. session User)
+```
+
 ## Layers
 
-- **Routes** (`server/api/**`) — thin HTTP wrappers, ≤5 lines. Build the container,
+- **Routes** (`server/api/**`) — thin HTTP wrappers. Build the container,
   call a controller, return the result. No auth, validation, or logic.
 - **Controllers** (`server/features/<feature>/<feature>.controller.ts`) — HTTP concerns
   only: validate input (Zod), authorize, orchestrate, set status codes.
@@ -14,8 +37,10 @@ Server code is layered **Routes → Controllers → Services**, each with one jo
 ## Wiring
 
 - **DI container** (`server/utils/container.ts`) is the single place services are
-  constructed. Routes call `createContainer(event)` and destructure the controller
-  they need. The db is built lazily and memoized per request.
+  constructed.
+  - Routes call `createContainer(event)` and destructure the controller
+    they need.
+  - The db is built lazily and memoized per request.
 - **Validation** — all Zod schemas live in `shared/utils/schema-validation/` and are
   shared by client and server. One `<feature>.schema.ts` per feature, re-exported from
   `index.ts` (the `#shared/utils/schema-validation` barrel); shared building blocks like
@@ -62,8 +87,7 @@ The `notes` feature is a complete worked example of every step.
 
 Custom oxlint JS plugin
 (`tools/oxlint/architecture.mjs`, registered via `jsPlugins`) fails the lint on the
-common violations:
-Learn how to write yours at [Writing JS Plugins](https://oxc.rs/docs/guide/usage/linter/writing-js-plugins.html)
+common violations.
 
 - **`arch/no-db-access-in-controllers`** — controllers can't import `drizzle-orm`/schema
   or call `useDrizzle()`; DB access belongs in the service.

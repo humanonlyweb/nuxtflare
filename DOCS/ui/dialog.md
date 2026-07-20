@@ -20,12 +20,12 @@ focus trap and backdrop for free). Auto-imported as `<UiDialog>` from
 
 ### Slots
 
-| Slot         | Props       | Purpose                                   |
-| ------------ | ----------- | ----------------------------------------- |
-| `default`    | `{ close }` | Body content (lazy-mounted on first open) |
-| `header`     | —           | Replace the whole header                  |
-| `footer`     | `{ close }` | Footer actions                            |
-| `close-icon` | —           | Close-button glyph (default `✕`)          |
+| Slot         | Props       | Purpose                                           |
+| ------------ | ----------- | ------------------------------------------------- |
+| `default`    | `{ close }` | Body content (lazy-mounted on first open)         |
+| `header`     | —           | Replace the whole header                          |
+| `footer`     | `{ close }` | Footer actions                                    |
+| `close-icon` | —           | Close-button icon (default `<UiIcon name="x" />`) |
 
 ### Styling hooks
 

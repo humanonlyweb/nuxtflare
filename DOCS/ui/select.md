@@ -22,12 +22,12 @@ with `v-model` (a `T`, or `T[]` when `multiple`).
 
 ## Slots
 
-| Slot      | Props                                          | Purpose                          |
-| --------- | ---------------------------------------------- | -------------------------------- |
-| `value`   | `{ selected: SelectOption<T>[], placeholder }` | Custom trigger content           |
-| `option`  | `{ option, selected, active, index }`          | Custom option row                |
-| `check`   | `{ selected }`                                 | Selected indicator (default row) |
-| `chevron` | —                                              | Trigger chevron glyph            |
+| Slot      | Props                                          | Purpose                                                    |
+| --------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| `value`   | `{ selected: SelectOption<T>[], placeholder }` | Custom trigger content                                     |
+| `option`  | `{ option, selected, active, index }`          | Custom option row                                          |
+| `check`   | `{ selected }`                                 | Selected indicator (default `<UiIcon name="check" />`)     |
+| `chevron` | —                                              | Trigger chevron (default `<UiIcon name="chevron-down" />`) |
 
 ## Styling hooks
 

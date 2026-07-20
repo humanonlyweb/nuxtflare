@@ -60,36 +60,38 @@ const {
       <slot name="trigger" :is-open="isOpen">{{ label }}</slot>
     </button>
 
-    <Transition name="ui-menu-pop">
-      <div
-        v-if="isOpen"
-        :id="menuId"
-        ref="menu-panel"
-        role="menu"
-        popover="manual"
-        data-part="menu-list"
-        :style="[panelStyle, listConstraints]"
-        :data-menu-drop-up="dropUp"
-        :aria-labelledby="triggerId"
-        @keydown="onMenuKeydown"
-      >
-        <button
-          v-for="(item, i) in items"
-          :key="item.value"
-          3
-          type="button"
-          role="menuitem"
-          data-part="menu-item"
-          tabindex="-1"
-          :disabled="item.disabled"
-          :data-menu-active="i === activeIndex || undefined"
-          @click="activate(i)"
-          @mousemove="!item.disabled && setActive(i)"
+    <Teleport to="body">
+      <Transition name="ui-menu-pop">
+        <div
+          v-if="isOpen"
+          :id="menuId"
+          ref="menu-panel"
+          role="menu"
+          popover="manual"
+          data-part="menu-list"
+          :style="[panelStyle, listConstraints]"
+          :data-menu-drop-up="dropUp"
+          :aria-labelledby="triggerId"
+          @keydown="onMenuKeydown"
         >
-          <slot name="item" :item="item" :active="i === activeIndex">{{ item.label }}</slot>
-        </button>
-      </div>
-    </Transition>
+          <button
+            v-for="(item, i) in items"
+            :key="item.value"
+            3
+            type="button"
+            role="menuitem"
+            data-part="menu-item"
+            tabindex="-1"
+            :disabled="item.disabled"
+            :data-menu-active="i === activeIndex || undefined"
+            @click="activate(i)"
+            @mousemove="!item.disabled && setActive(i)"
+          >
+            <slot name="item" :item="item" :active="i === activeIndex">{{ item.label }}</slot>
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 

@@ -44,7 +44,7 @@ const panelId = `${uid}-panel`;
           <slot name="title" :open="open">{{ title }}</slot>
         </span>
         <span data-part="accordion-indicator" aria-hidden="true">
-          <slot name="indicator" :open="open" />
+          <slot name="indicator" :open="open"><UiIcon name="chevron-down" /></slot>
         </span>
       </button>
     </component>
@@ -88,8 +88,6 @@ const panelId = `${uid}-panel`;
   overflow: hidden;
 }
 
-/* Hand overflow back once expanded so focus rings inside the panel aren't clipped.
-   A discrete property flips halfway, so the delay pushes it to the end of the open. */
 [data-accordion-open] > [data-part="accordion-clip"] {
   overflow: visible;
   transition: overflow 1ms 219ms allow-discrete;

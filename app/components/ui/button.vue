@@ -63,19 +63,19 @@ const buttonProps = computed(() => {
 <template>
   <component
     :is="isComponent"
-    v-bind="{ ...linkProps, ...buttonProps }"
-    data-part="button"
-    :data-button-variant="variant ?? 'primary'"
-    :data-button-size="size ?? 'medium'"
     :data-button-full-width="fullWidth || undefined"
-    :data-button-loading="loading || undefined"
     :data-button-disabled="isDisabled || undefined"
+    :data-button-variant="variant ?? 'primary'"
+    :data-button-loading="loading || undefined"
+    v-bind="{ ...linkProps, ...buttonProps }"
+    :data-button-size="size ?? 'medium'"
     :aria-busy="loading || undefined"
+    data-part="button"
   >
     <slot name="leading" />
-    <span v-if="loading" data-part="button-spinner" aria-hidden="true"
-      ><slot name="spinner"
-    /></span>
+    <span v-if="loading" data-part="button-spinner" aria-hidden="true">
+      <slot name="spinner" />
+    </span>
     <span v-if="$slots.default" data-part="button-label"><slot /></span>
     <slot name="trailing" />
   </component>

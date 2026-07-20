@@ -36,7 +36,7 @@ const role = computed(() => (toast.tone === "danger" ? "alert" : "status"));
       aria-label="Dismiss"
       @click="emit('dismiss', toast.id)"
     >
-      <slot name="close-icon">✕</slot>
+      <slot name="close-icon"><UiIcon name="x" /></slot>
     </button>
   </div>
 </template>

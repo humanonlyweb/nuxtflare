@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 
 const PANEL_GAP = 6;
-const VIEWPORT_HEIGHT_CAP = 0.5;
+const VIEWPORT_HEIGHT_CAP = 0.2;
 
 interface UseMenuOptions {
   itemCount: Ref<number>;

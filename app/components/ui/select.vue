@@ -121,51 +121,55 @@ const displayLabel = computed(() => {
           </slot>
         </span>
         <span data-part="chevron" aria-hidden="true">
-          <slot name="chevron">▾</slot>
+          <slot name="chevron"><UiIcon name="chevron-down" /></slot>
         </span>
       </button>
 
-      <Transition name="ui-select-pop">
-        <ul
-          v-if="isOpen"
-          :id="listboxId"
-          ref="select-listbox"
-          role="listbox"
-          popover="manual"
-          data-part="listbox"
-          :style="[panelStyle, listConstraints]"
-          :data-select-drop-up="dropUp"
-          :aria-multiselectable="multiple || undefined"
-          :aria-labelledby="label ? labelId : undefined"
-        >
-          <li
-            v-for="(opt, i) in options"
-            :id="optionId(i)"
-            :key="opt.value"
-            role="option"
-            data-part="option"
-            :aria-selected="isSelected(opt.value)"
-            :aria-disabled="opt.disabled || undefined"
-            :data-select-active="i === activeIndex || undefined"
-            @click="selectAt(i)"
-            @pointerdown.prevent
-            @mousemove="!opt.disabled && setActive(i)"
+      <Teleport to="body">
+        <Transition name="ui-select-pop">
+          <ul
+            v-if="isOpen"
+            :id="listboxId"
+            ref="select-listbox"
+            role="listbox"
+            popover="manual"
+            data-part="listbox"
+            :data-select-drop-up="dropUp"
+            :style="[panelStyle, listConstraints]"
+            :aria-multiselectable="multiple || undefined"
+            :aria-labelledby="label ? labelId : undefined"
           >
-            <slot
-              name="option"
-              :option="opt"
-              :selected="isSelected(opt.value)"
-              :active="i === activeIndex"
-              :index="i"
+            <li
+              v-for="(opt, i) in options"
+              :id="optionId(i)"
+              :key="opt.value"
+              role="option"
+              data-part="option"
+              :aria-selected="isSelected(opt.value)"
+              :aria-disabled="opt.disabled || undefined"
+              :data-select-active="i === activeIndex || undefined"
+              @click="selectAt(i)"
+              @pointerdown.prevent
+              @mousemove="!opt.disabled && setActive(i)"
             >
-              <span data-part="option-check" aria-hidden="true">
-                <slot name="check" :selected="isSelected(opt.value)" />
-              </span>
-              <span data-part="option-label">{{ opt.label }}</span>
-            </slot>
-          </li>
-        </ul>
-      </Transition>
+              <slot
+                name="option"
+                :option="opt"
+                :selected="isSelected(opt.value)"
+                :active="i === activeIndex"
+                :index="i"
+              >
+                <span data-part="option-check" aria-hidden="true">
+                  <slot name="check" :selected="isSelected(opt.value)">
+                    <UiIcon v-if="isSelected(opt.value)" name="check" />
+                  </slot>
+                </span>
+                <span data-part="option-label">{{ opt.label }}</span>
+              </slot>
+            </li>
+          </ul>
+        </Transition>
+      </Teleport>
     </div>
 
     <Transition name="field-message" mode="out-in">

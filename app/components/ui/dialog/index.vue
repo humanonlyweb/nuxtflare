@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Teleport } from "vue";
+
 const {
   title,
   description,
@@ -64,44 +66,46 @@ function onCancel(event: Event) {
 </script>
 
 <template>
-  <dialog
-    ref="dialogRef"
-    data-part="dialog"
-    :data-dialog-size="size"
-    :aria-labelledby="title ? titleId : undefined"
-    :aria-describedby="description ? descId : undefined"
-    @close="onClose"
-    @cancel="onCancel"
-  >
-    <div ref="panelRef" data-part="panel">
-      <header v-if="title || $slots.header" data-part="header">
-        <slot name="header">
-          <div data-part="header-text">
-            <h2 :id="titleId" data-part="title">{{ title }}</h2>
-            <p v-if="description" :id="descId" data-part="description">{{ description }}</p>
-          </div>
-        </slot>
+  <teleport to="body">
+    <dialog
+      ref="dialogRef"
+      data-part="dialog"
+      :data-dialog-size="size"
+      :aria-labelledby="title ? titleId : undefined"
+      :aria-describedby="description ? descId : undefined"
+      @close="onClose"
+      @cancel="onCancel"
+    >
+      <div ref="panelRef" data-part="panel">
+        <header v-if="title || $slots.header" data-part="header">
+          <slot name="header">
+            <div data-part="header-text">
+              <h2 :id="titleId" data-part="title">{{ title }}</h2>
+              <p v-if="description" :id="descId" data-part="description">{{ description }}</p>
+            </div>
+          </slot>
 
-        <button
-          v-if="showCloseButton"
-          type="button"
-          data-part="close"
-          aria-label="Close"
-          @click="close"
-        >
-          <slot name="close-icon">✕</slot>
-        </button>
-      </header>
+          <button
+            v-if="showCloseButton"
+            type="button"
+            data-part="close"
+            aria-label="Close"
+            @click="close"
+          >
+            <slot name="close-icon"><UiIcon name="x" /></slot>
+          </button>
+        </header>
 
-      <div v-if="everOpened" data-part="body">
-        <slot :close="close" />
+        <div v-if="everOpened" data-part="body">
+          <slot :close="close" />
+        </div>
+
+        <footer v-if="$slots.footer" data-part="footer">
+          <slot name="footer" :close="close" />
+        </footer>
       </div>
-
-      <footer v-if="$slots.footer" data-part="footer">
-        <slot name="footer" :close="close" />
-      </footer>
-    </div>
-  </dialog>
+    </dialog>
+  </teleport>
 </template>
 
 <style scoped>
