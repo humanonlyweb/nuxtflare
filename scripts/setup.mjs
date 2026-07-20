@@ -63,15 +63,20 @@ p {
 `;
 
 async function edit(path, fn) {
-  const before = await readFile(path, "utf8");
+  let before;
+  try {
+    before = await readFile(path, "utf8");
+  } catch {
+    warnings.push(`${path} not found — skipped`);
+    return;
+  }
   const after = fn(before);
-  if (after === before) warnings.push(`no change applied to ${path}`);
+  if (after === before) warnings.push(`no change applied to ${path} — check it by hand`);
   await writeFile(path, after);
 }
 
 const del = (path) => rm(path, { recursive: true, force: true });
 
-await edit("package.json", (s) => s.replace(/"name":\s*"template"/, `"name": "${name}"`));
 await edit("nuxt.config.ts", (s) =>
   s
     .replace(/service:\s*"template"/, `service: "${name}"`)
@@ -103,7 +108,9 @@ if (dropNotes) {
       "server/features/notes",
       "server/database/schema/notes.ts",
       "shared/utils/schema-validation/notes.schema.ts",
-      // Regenerated below: the shipped migration creates the notes table.
+      // The single shipped migration creates the notes table alongside the auth
+      // tables, so there is nothing to salvage — `db:generate` rebuilds it from
+      // whatever schema is left.
       "server/database/migrations",
     ].map(del),
   );
@@ -112,7 +119,7 @@ if (dropNotes) {
     s.replace(/^export \* from "\.\/notes";\r?\n/m, ""),
   );
   await edit("shared/utils/schema-validation/index.ts", (s) =>
-    s.replace(/^export \* from "\.\/notes\.schema";\r?\n/m, "export {};\n"),
+    s.replace(/^export \* from "\.\/notes\.schema";\r?\n/m, 'export * from "./helper";\n'),
   );
   await edit("shared/utils/id-gen.ts", (s) => s.replace(/^ *note: "note",\r?\n/m, ""));
   await edit("server/utils/container.ts", (s) =>
@@ -137,15 +144,20 @@ if (dropNotes) {
   await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
 }
 
-// One-shot: drop the npm script and delete this file so it can't run again.
-await edit("package.json", (s) => s.replace(/^.*"setup":.*scripts\/setup\.mjs.*\r?\n/m, ""));
+// Last on purpose: the re-run guard keys off the package name, so renaming only
+// once everything else succeeded means a crash halfway leaves setup re-runnable.
+await edit("package.json", (s) =>
+  s
+    .replace(/"name":\s*"template"/, `"name": "${name}"`)
+    .replace(/^.*"setup":.*scripts\/setup\.mjs.*\r?\n/m, ""),
+);
 await Promise.all(["scripts/setup.mjs", "app/pages/components.vue"].map(del));
 
 console.log(`\n✔ Renamed project to "${name}".`);
 console.log(
   "  Removed: setup script, /components demo page" + (dropNotes ? ", notes feature" : ""),
 );
-for (const w of warnings) console.log(`  ! ${w} — check it by hand`);
+for (const w of warnings) console.log(`  ! ${w}`);
 
 console.log("\nNext:");
 if (!domain) {
