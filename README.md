@@ -104,7 +104,7 @@ lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
 ## UI
 
 Styleless base components in `app/components/ui/` (auto-imported: `<UiButton>`,
-`<UiInput>`, `<UiSelect>`, `<UiDialog>`, `<UiToast>`, `<UiTable>`, …). Behaviour, a11y
+`<UiInput>`, `<UiSelect>`, `<UiAccordion>`, `<UiDialog>`, `<UiToast>`, `<UiTable>`, …). Behaviour, a11y
 and motion are built in; visuals are `data-part` / `data-<component>-*` hooks you style.
 See [`DOCS/ui`](./DOCS/ui/README.md) and the live `/components` page.
 Delete if you want to bring your own UI kit (Tailwind, UnoCSS, DaisyUI, Vuetify, etc.) — the

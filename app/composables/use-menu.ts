@@ -13,10 +13,20 @@ export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
   const isOpen = ref(false);
   const dropUp = ref(false);
   const activeIndex = ref(-1);
-  const panelStyle = ref<Record<string, string>>({});
 
   const triggerRef = useTemplateRef<HTMLButtonElement>("menu-trigger");
   const menuRef = useTemplateRef<HTMLElement>("menu-panel");
+
+  const { top, bottom, left, width, update } = useElementBounding(triggerRef);
+  const { height: viewportHeight } = useWindowSize();
+
+  const panelStyle = computed<Record<string, string>>(() => ({
+    left: `${left.value}px`,
+    minWidth: `${width.value}px`,
+    ...(dropUp.value
+      ? { top: "auto", bottom: `${viewportHeight.value - top.value + PANEL_GAP}px` }
+      : { top: `${bottom.value + PANEL_GAP}px`, bottom: "auto" }),
+  }));
 
   function enabledFrom(start: number, dir: 1 | -1) {
     for (let i = start; i >= 0 && i < itemCount.value; i += dir) {
@@ -29,33 +39,18 @@ export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
 
   function focusActive() {
     void nextTick(() => {
-      menuRef.value
-        ?.querySelectorAll<HTMLElement>('[data-part="menu-item"]')
-        [activeIndex.value]?.focus();
+      const items = menuRef.value?.querySelectorAll<HTMLElement>('[data-part="menu-item"]');
+      items?.[activeIndex.value]?.focus();
     });
-  }
-
-  function positionPanel() {
-    const rect = triggerRef.value?.getBoundingClientRect();
-    if (!rect) return;
-    panelStyle.value = {
-      left: `${rect.left}px`,
-      minWidth: `${rect.width}px`,
-      ...(dropUp.value
-        ? { top: "auto", bottom: `${window.innerHeight - rect.top + PANEL_GAP}px` }
-        : { top: `${rect.bottom + PANEL_GAP}px`, bottom: "auto" }),
-    };
   }
 
   async function open(edge: "first" | "last" = "first") {
     if (isOpen.value || !itemCount.value) return;
 
-    const rect = triggerRef.value?.getBoundingClientRect();
-    if (rect) {
-      const below = window.innerHeight - rect.bottom;
-      dropUp.value = below < window.innerHeight * VIEWPORT_HEIGHT_CAP && rect.top > below;
-    }
-    positionPanel();
+    update();
+    const below = viewportHeight.value - bottom.value;
+    dropUp.value = below < viewportHeight.value * VIEWPORT_HEIGHT_CAP && top.value > below;
+
     isOpen.value = true;
     activeIndex.value = edge === "last" ? lastEnabled() : firstEnabled();
 
@@ -141,17 +136,6 @@ export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
     },
   );
 
-  useEventListener(
-    window,
-    "scroll",
-    () => {
-      if (isOpen.value) positionPanel();
-    },
-    { capture: true, passive: true },
-  );
-  useEventListener(window, "resize", () => {
-    if (isOpen.value) positionPanel();
-  });
   onClickOutside(menuRef, () => close(false), { ignore: [triggerRef] });
 
   return {

@@ -59,6 +59,17 @@ const someFruitsChecked = computed(
   () => fruitsChecked.value.length > 0 && fruitsChecked.value.length < allFruitValues.length,
 );
 
+// Spin button
+const quantity = ref(1);
+const temperature = ref(20.5);
+const seats = ref(3);
+
+// Accordion
+const faq = ref<string>("shipping");
+const sections = ref<string[]>(["general"]);
+const emailAlerts = ref(true);
+const compactLayout = ref(false);
+
 // Radio
 const plan = ref<string>("free");
 const planOptions: SelectOption<string>[] = [
@@ -247,6 +258,34 @@ const columns: TableColumn<Person>[] = [
     </section>
 
     <section class="section">
+      <h2>Spin button</h2>
+      <div class="grid">
+        <UiSpinButton
+          v-model="quantity"
+          label="Quantity"
+          :min="1"
+          :max="99"
+          hint="Hold to repeat."
+        />
+        <UiSpinButton
+          v-model="temperature"
+          label="Temperature"
+          :min="-10"
+          :max="40"
+          :step="0.5"
+          :format="(v) => `${v.toFixed(1)} °C`"
+        />
+        <UiSpinButton
+          v-model="seats"
+          label="Seats"
+          :min="1"
+          :max="4"
+          error="Only 4 seats left on this table."
+        />
+      </div>
+    </section>
+
+    <section class="section">
       <h2>Radio group</h2>
       <UiRadioGroup v-model="plan" label="Plan" :options="planOptions" hint="Change anytime." />
 
@@ -337,6 +376,49 @@ const columns: TableColumn<Person>[] = [
           <strong>{{ value }}</strong>
         </template>
       </UiTable>
+    </section>
+
+    <section class="section">
+      <h2>Accordion</h2>
+      <UiAccordion v-model="faq">
+        <UiAccordionItem value="shipping" title="How fast is shipping?">
+          <template #indicator="{ open }">
+            <span class="chevron" :data-open="open || undefined">▾</span>
+          </template>
+          <p>Orders placed before 2pm ship the same day, anywhere in the country.</p>
+        </UiAccordionItem>
+        <UiAccordionItem value="returns" title="Can I return an item?">
+          <template #indicator="{ open }">
+            <span class="chevron" :data-open="open || undefined">▾</span>
+          </template>
+          <p>Thirty days, no questions asked — as long as the tags are still on.</p>
+        </UiAccordionItem>
+        <UiAccordionItem value="support" title="How do I reach support?">
+          <template #indicator="{ open }">
+            <span class="chevron" :data-open="open || undefined">▾</span>
+          </template>
+          <p>Email us, or open a chat from the dashboard. We answer within a day.</p>
+          <UiButton size="small" variant="secondary" @click="toast.success('Chat opened.')">
+            Start a chat
+          </UiButton>
+        </UiAccordionItem>
+      </UiAccordion>
+
+      <!-- multiple: several panels open at once. -->
+      <UiAccordion v-model="sections" multiple>
+        <UiAccordionItem value="general" title="General">
+          <template #indicator="{ open }">
+            <span class="chevron" :data-open="open || undefined">▾</span>
+          </template>
+          <UiSwitch v-model="emailAlerts" label="Email notifications" />
+        </UiAccordionItem>
+        <UiAccordionItem value="appearance" title="Appearance">
+          <template #indicator="{ open }">
+            <span class="chevron" :data-open="open || undefined">▾</span>
+          </template>
+          <UiSwitch v-model="compactLayout" label="Compact layout" />
+        </UiAccordionItem>
+      </UiAccordion>
     </section>
 
     <UiToast />
@@ -677,6 +759,113 @@ const columns: TableColumn<Person>[] = [
 }
 .components :deep([data-part="option-label"]) {
   flex: 1;
+}
+
+/* Spin button */
+.components :deep([data-part="spinbutton"]) {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.components :deep([data-part="spinbutton"]:focus-within) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.components :deep([data-spinbutton-error]) {
+  border-color: var(--danger);
+}
+.components :deep([data-spinbutton-disabled]) {
+  opacity: 0.5;
+}
+.components :deep([data-part="spinbutton-input"]) {
+  flex: 1;
+  min-width: 0;
+  padding: 0.6rem 0.25rem;
+  font: inherit;
+  font-size: max(1rem, 16px);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text);
+  background: none;
+  border: none;
+  outline: none;
+}
+.components :deep([data-part="spinbutton-decrement"]),
+.components :deep([data-part="spinbutton-increment"]) {
+  width: 2.5rem;
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.components :deep([data-part="spinbutton-decrement"]:hover:not(:disabled)),
+.components :deep([data-part="spinbutton-increment"]:hover:not(:disabled)) {
+  color: var(--text);
+}
+.components :deep([data-part="spinbutton-decrement"]:disabled),
+.components :deep([data-part="spinbutton-increment"]:disabled) {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Accordion */
+.components :deep([data-part="accordion"]) {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.components :deep([data-part="accordion-item"] + [data-part="accordion-item"]) {
+  border-top: 1px solid var(--border);
+}
+.components :deep([data-part="accordion-trigger"]) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: start;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.components :deep([data-part="accordion-trigger"]:hover) {
+  background: color-mix(in oklch, var(--text) 4%, transparent);
+}
+.components :deep([data-part="accordion-trigger"]:focus-visible) {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.components :deep([data-part="accordion-content"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.chevron {
+  display: inline-block;
+  color: var(--text-muted);
+  transition: transform 200ms var(--ease-out);
+}
+.chevron[data-open] {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chevron {
+    transition: none;
+  }
 }
 
 /* Checkbox — hide the native input, style the control box via its pseudo-classes. */

@@ -63,8 +63,10 @@ example skin you can copy from.
 | `UiCheckbox`                         | `checkbox.vue`    | [checkbox](./checkbox.md)       |
 | `UiSwitch`                           | `switch.vue`      | [switch](./switch.md)           |
 | `UiRadioGroup`                       | `radio-group.vue` | [radio-group](./radio-group.md) |
+| `UiSpinButton`                       | `spin-button.vue` | [spin-button](./spin-button.md) |
 | `UiSelect`                           | `select.vue`      | [select](./select.md)           |
 | `UiMenu`                             | `menu.vue`        | [menu](./menu.md)               |
+| `UiAccordion` (+ `UiAccordionItem`)  | `accordion/`      | [accordion](./accordion.md)     |
 | `UiTooltip`                          | `tooltip.vue`     | [tooltip](./tooltip.md)         |
 | `UiDialog` / `UiDialogConfirm`       | `dialog/`         | [dialog](./dialog.md)           |
 | `UiToast` (+ `useToast`)             | `toast/`          | [toast](./toast.md)             |

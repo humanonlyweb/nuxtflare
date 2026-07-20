@@ -85,41 +85,44 @@ const displayLabel = computed(() => {
   <div data-part="field" :data-field-error="isError || undefined">
     <label
       v-if="label"
+      :for="id"
       :id="labelId"
       ref="select-label"
-      :for="id"
       data-part="field-label"
       @pointerdown="onTriggerPointerdown"
-      >{{ label }}</label
     >
+      {{ label }}
+    </label>
 
     <div ref="select-control" data-part="select-control">
       <button
         :id="id"
-        ref="select-trigger"
         type="button"
         role="combobox"
-        aria-haspopup="listbox"
         data-part="trigger"
+        ref="select-trigger"
+        aria-haspopup="listbox"
         :aria-expanded="isOpen"
         :aria-controls="listboxId"
-        :aria-activedescendant="activeId"
-        :aria-labelledby="label ? `${labelId} ${id}` : undefined"
-        :aria-describedby="describedBy"
-        :aria-invalid="isError || undefined"
-        :disabled="disabled"
-        :data-select-open="isOpen || undefined"
-        :data-select-error="isError || undefined"
-        v-bind="$attrs"
         @keydown="onTriggerKeydown"
+        :aria-activedescendant="activeId"
         @pointerdown="onTriggerPointerdown"
+        :aria-labelledby="label ? `${labelId} ${id}` : undefined"
+        :data-select-error="isError || undefined"
+        :data-select-open="isOpen || undefined"
+        :aria-invalid="isError || undefined"
+        :aria-describedby="describedBy"
+        :disabled="disabled"
+        v-bind="$attrs"
       >
         <span data-part="value" :data-select-placeholder="!selectedOptions.length || undefined">
-          <slot name="value" :selected="selectedOptions" :placeholder="placeholder">{{
-            displayLabel
-          }}</slot>
+          <slot name="value" :selected="selectedOptions" :placeholder="placeholder">
+            {{ displayLabel }}
+          </slot>
         </span>
-        <span data-part="chevron" aria-hidden="true"><slot name="chevron">▾</slot></span>
+        <span data-part="chevron" aria-hidden="true">
+          <slot name="chevron">▾</slot>
+        </span>
       </button>
 
       <Transition name="ui-select-pop">

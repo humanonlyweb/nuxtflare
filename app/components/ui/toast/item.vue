@@ -2,22 +2,13 @@
 const { toast, duration = 4500 } = defineProps<{ toast: Toast; duration?: number }>();
 const emit = defineEmits<{ dismiss: [id: number] }>();
 
-let timer: ReturnType<typeof setTimeout> | undefined;
-
-function start() {
-  if (timer) clearTimeout(timer);
-  timer = setTimeout(() => emit("dismiss", toast.id), duration);
-}
-function stop() {
-  if (timer) clearTimeout(timer);
-  timer = undefined;
-}
+const { start, stop } = useTimeoutFn(
+  () => emit("dismiss", toast.id),
+  () => duration,
+);
 
 const visibility = useDocumentVisibility();
 watch(visibility, (state) => (state === "hidden" ? stop() : start()));
-
-onMounted(start);
-onBeforeUnmount(stop);
 
 const role = computed(() => (toast.tone === "danger" ? "alert" : "status"));
 </script>
