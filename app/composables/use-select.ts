@@ -32,7 +32,15 @@ export function useSelect<T extends SelectValue>({
   const labelRef = useTemplateRef<HTMLLabelElement>("select-label");
   const controlRef = useTemplateRef<HTMLElement>("select-control");
 
-  const panelStyle = ref<Record<string, string>>({});
+  const { top, bottom, left, width, update } = useElementBounding(triggerRef);
+  const { height: viewportHeight } = useWindowSize();
+  const panelStyle = computed<Record<string, string>>(() => ({
+    left: `${left.value}px`,
+    width: `${width.value}px`,
+    ...(dropUp.value
+      ? { top: "auto", bottom: `${viewportHeight.value - top.value + PANEL_GAP}px` }
+      : { top: `${bottom.value + PANEL_GAP}px`, bottom: "auto" }),
+  }));
 
   const isSelected = (value: T) => selectedValues.value.includes(value);
   const optionId = (index: number) => `${baseId.value}-opt-${index}`;
@@ -70,31 +78,14 @@ export function useSelect<T extends SelectValue>({
     document.getElementById(optionId(activeIndex.value))?.scrollIntoView({ block: "nearest" });
   }
 
-  function positionPanel() {
-    const rect = triggerRef.value?.getBoundingClientRect();
-    if (!rect) return;
-
-    panelStyle.value = {
-      left: `${rect.left}px`,
-      width: `${rect.width}px`,
-      ...(dropUp.value
-        ? { top: "auto", bottom: `${window.innerHeight - rect.top + PANEL_GAP}px` }
-        : { top: `${rect.bottom + PANEL_GAP}px`, bottom: "auto" }),
-    };
-  }
-
   function open(intent: OpenIntent) {
     if (disabled.value || !options.value.length) return;
 
-    const rect = triggerRef.value?.getBoundingClientRect();
+    update();
+    const below = viewportHeight.value - bottom.value;
+    const panelHeight = Math.min(maxHeight.value, viewportHeight.value * VIEWPORT_HEIGHT_CAP);
+    dropUp.value = below < panelHeight && top.value > below;
 
-    if (rect) {
-      const below = window.innerHeight - rect.bottom;
-      const panelHeight = Math.min(maxHeight.value, window.innerHeight * VIEWPORT_HEIGHT_CAP);
-      dropUp.value = below < panelHeight && rect.top > below;
-    }
-
-    positionPanel();
     isOpen.value = true;
     const selected =
       intent === "selected" ? options.value.findIndex((o) => isSelected(o.value)) : -1;
@@ -153,12 +144,13 @@ export function useSelect<T extends SelectValue>({
   );
 
   let typeahead = "";
-  let typeTimer: ReturnType<typeof setTimeout> | undefined;
+  const resetTypeahead = useTimeoutFn(() => (typeahead = ""), TYPEAHEAD_RESET, {
+    immediate: false,
+  });
 
   function onType(char: string) {
     typeahead += char.toLowerCase();
-    clearTimeout(typeTimer);
-    typeTimer = setTimeout(() => (typeahead = ""), TYPEAHEAD_RESET);
+    resetTypeahead.start();
 
     const list = options.value;
     const single = typeahead.length > 1 && typeahead.split("").every((c) => c === typeahead[0]);
@@ -238,18 +230,6 @@ export function useSelect<T extends SelectValue>({
     await nextTick();
     const el = listboxRef.value;
     if (el?.showPopover && !el.matches(":popover-open")) el.showPopover();
-  });
-
-  useEventListener(
-    window,
-    "scroll",
-    () => {
-      if (isOpen.value) positionPanel();
-    },
-    { capture: true, passive: true },
-  );
-  useEventListener(window, "resize", () => {
-    if (isOpen.value) positionPanel();
   });
 
   onClickOutside(controlRef, () => close(), { ignore: [labelRef] });
