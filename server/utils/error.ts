@@ -8,5 +8,7 @@ export const Errors = {
   forbidden: (message = "Forbidden") => createError({ status: 403, message }),
   notFound: (resource: string) => createError({ status: 404, message: `${resource} not found` }),
   conflict: (message: string) => createError({ status: 409, message }),
+  tooLarge: (message: string, data?: { errors: Record<string, string> }) =>
+    createError({ status: 413, message, internal: data }),
   internal: (message = "Something went wrong") => createError({ status: 500, message }),
 };

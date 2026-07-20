@@ -8,19 +8,18 @@ export interface Toast {
 
 const DEFAULT_MAX = 5;
 
-const items = ref<Toast[]>([]);
-const maxToasts = ref(DEFAULT_MAX);
-let counter = 0;
-
-function push(message: string, tone: ToastTone) {
-  if (import.meta.server) return -1;
-
-  const id = ++counter;
-  items.value = [...items.value, { id, message, tone }].slice(-maxToasts.value);
-  return id;
-}
-
 export function useToast() {
+  const items = useState<Toast[]>("toasts", () => []);
+  const maxToasts = useState("toasts:max", () => DEFAULT_MAX);
+
+  function push(message: string, tone: ToastTone) {
+    if (import.meta.server) return -1;
+
+    const id = (items.value.at(-1)?.id ?? 0) + 1;
+    items.value = [...items.value, { id, message, tone }].slice(-maxToasts.value);
+    return id;
+  }
+
   return {
     items: readonly(items),
     dismiss: (id: number) => {

@@ -24,7 +24,6 @@ export function useSelect<T extends SelectValue>({
   maxHeight,
 }: UseSelectOptions<T>) {
   const isOpen = ref(false);
-  const dropUp = ref(false);
   const activeIndex = ref(-1);
 
   const triggerRef = useTemplateRef<HTMLButtonElement>("select-trigger");
@@ -32,14 +31,15 @@ export function useSelect<T extends SelectValue>({
   const labelRef = useTemplateRef<HTMLLabelElement>("select-label");
   const controlRef = useTemplateRef<HTMLElement>("select-control");
 
-  const { top, bottom, left, width, update } = useElementBounding(triggerRef);
-  const { height: viewportHeight } = useWindowSize();
+  const { rect, viewportHeight, dropUp, measure } = useAnchorPosition(triggerRef, isOpen, (vh) =>
+    Math.min(maxHeight.value, vh * VIEWPORT_HEIGHT_CAP),
+  );
   const panelStyle = computed<Record<string, string>>(() => ({
-    left: `${left.value}px`,
-    width: `${width.value}px`,
+    left: `${rect.value.left}px`,
+    width: `${rect.value.width}px`,
     ...(dropUp.value
-      ? { top: "auto", bottom: `${viewportHeight.value - top.value + PANEL_GAP}px` }
-      : { top: `${bottom.value + PANEL_GAP}px`, bottom: "auto" }),
+      ? { top: "auto", bottom: `${viewportHeight.value - rect.value.top + PANEL_GAP}px` }
+      : { top: `${rect.value.bottom + PANEL_GAP}px`, bottom: "auto" }),
   }));
 
   const isSelected = (value: T) => selectedValues.value.includes(value);
@@ -81,11 +81,7 @@ export function useSelect<T extends SelectValue>({
   function open(intent: OpenIntent) {
     if (disabled.value || !options.value.length) return;
 
-    update();
-    const below = viewportHeight.value - bottom.value;
-    const panelHeight = Math.min(maxHeight.value, viewportHeight.value * VIEWPORT_HEIGHT_CAP);
-    dropUp.value = below < panelHeight && top.value > below;
-
+    measure();
     isOpen.value = true;
     const selected =
       intent === "selected" ? options.value.findIndex((o) => isSelected(o.value)) : -1;

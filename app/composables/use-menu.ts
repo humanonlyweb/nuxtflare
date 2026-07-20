@@ -11,21 +11,23 @@ interface UseMenuOptions {
 
 export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
   const isOpen = ref(false);
-  const dropUp = ref(false);
   const activeIndex = ref(-1);
 
   const triggerRef = useTemplateRef<HTMLButtonElement>("menu-trigger");
   const menuRef = useTemplateRef<HTMLElement>("menu-panel");
 
-  const { top, bottom, left, width, update } = useElementBounding(triggerRef);
-  const { height: viewportHeight } = useWindowSize();
+  const { rect, viewportHeight, dropUp, measure } = useAnchorPosition(
+    triggerRef,
+    isOpen,
+    (vh) => vh * VIEWPORT_HEIGHT_CAP,
+  );
 
   const panelStyle = computed<Record<string, string>>(() => ({
-    left: `${left.value}px`,
-    minWidth: `${width.value}px`,
+    left: `${rect.value.left}px`,
+    minWidth: `${rect.value.width}px`,
     ...(dropUp.value
-      ? { top: "auto", bottom: `${viewportHeight.value - top.value + PANEL_GAP}px` }
-      : { top: `${bottom.value + PANEL_GAP}px`, bottom: "auto" }),
+      ? { top: "auto", bottom: `${viewportHeight.value - rect.value.top + PANEL_GAP}px` }
+      : { top: `${rect.value.bottom + PANEL_GAP}px`, bottom: "auto" }),
   }));
 
   function enabledFrom(start: number, dir: 1 | -1) {
@@ -47,10 +49,7 @@ export function useMenu({ itemCount, isDisabled, onActivate }: UseMenuOptions) {
   async function open(edge: "first" | "last" = "first") {
     if (isOpen.value || !itemCount.value) return;
 
-    update();
-    const below = viewportHeight.value - bottom.value;
-    dropUp.value = below < viewportHeight.value * VIEWPORT_HEIGHT_CAP && top.value > below;
-
+    measure();
     isOpen.value = true;
     activeIndex.value = edge === "last" ? lastEnabled() : firstEnabled();
 

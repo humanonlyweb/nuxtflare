@@ -46,6 +46,9 @@ await edit("nuxt.config.ts", (s) =>
       `fromAddress: "contact@${domain || "example.com"}"`,
     ),
 );
+await edit("server/utils/constant.ts", (s) =>
+  s.replace(/APP_NAME = "template"/, `APP_NAME = "${name}"`),
+);
 await edit("app/layouts/default.vue", (s) => s.replaceAll("humanonlyweb", name));
 await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
 await edit("app/pages/auth/sign-in.vue", (s) => s.replaceAll("humanonlyweb starter", name));
