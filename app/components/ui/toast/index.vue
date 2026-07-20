@@ -1,5 +1,8 @@
 <script setup lang="ts">
-const { items, dismiss } = useToast();
+const { max = 5 } = defineProps<{ max?: number }>();
+
+const { items, dismiss, setMax } = useToast();
+watchEffect(() => setMax(max));
 </script>
 
 <template>

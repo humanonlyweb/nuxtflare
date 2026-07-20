@@ -648,34 +648,6 @@ const columns: TableColumn<Person>[] = [
   padding: 0.75rem 1.25rem 1.25rem;
 }
 
-/* Toast */
-.components :deep([data-part="toast"]) {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: min(340px, calc(100vw - 2rem));
-  padding: 0.75rem 0.85rem;
-  color: var(--text);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-inline-start: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
-}
-.components :deep([data-toast-tone="danger"]) {
-  border-inline-start-color: var(--danger);
-}
-.components :deep([data-part="toast-message"]) {
-  flex: 1;
-  font-size: 0.9rem;
-}
-.components :deep([data-part="toast-close"]) {
-  color: var(--text-muted);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
 /* Table */
 .components :deep([data-part="table"]) {
   border: 1px solid var(--border);
@@ -708,5 +680,33 @@ const columns: TableColumn<Person>[] = [
 }
 .components :deep([data-part="row"]:last-child [data-part="cell"]) {
   border-bottom: none;
+}
+</style>
+
+<style>
+[data-part="toast"] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: min(340px, calc(100vw - 2rem));
+  padding: 0.75rem 0.85rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+[data-part="toast"][data-toast-tone="danger"] {
+  border-color: color-mix(in oklch, var(--danger) 35%, var(--border));
+}
+[data-part="toast-message"] {
+  flex: 1;
+  font-size: 0.9rem;
+}
+[data-part="toast-close"] {
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 </style>
