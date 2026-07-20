@@ -55,7 +55,8 @@
       "bunx oxlint --fix --type-aware",
       "bunx oxfmt --write"
     ],
-    "*.{scss,css}": "bunx oxfmt --write"
+    "*.{scss,css}": "bunx oxfmt --write",
+    "*.{md,json,jsonc,yml,yaml}": "bunx oxfmt --write --no-error-on-unmatched-pattern"
   },
   "packageManager": "bun@1.3.14"
 }

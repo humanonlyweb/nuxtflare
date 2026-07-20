@@ -86,6 +86,10 @@ body {
   font-variation-settings: "wdth" 100;
   overflow-x: hidden;
   text-box-trim: trim-both;
+
+  &:has(dialog[open]) {
+    overflow: hidden;
+  }
 }
 
 #__nuxt {

@@ -46,6 +46,42 @@ const statusOptions: SelectOption<string>[] = [
   { label: "Archived", value: "archived" },
 ];
 
+// Checkbox
+const terms = ref(false);
+const newsletter = ref(true);
+const fruitsChecked = ref<string[]>(["apple"]);
+const allFruitValues = ["apple", "banana", "cherry"];
+const allFruitsChecked = computed({
+  get: () => fruitsChecked.value.length === allFruitValues.length,
+  set: (v) => (fruitsChecked.value = v ? [...allFruitValues] : []),
+});
+const someFruitsChecked = computed(
+  () => fruitsChecked.value.length > 0 && fruitsChecked.value.length < allFruitValues.length,
+);
+
+// Radio
+const plan = ref<string>("free");
+const planOptions: SelectOption<string>[] = [
+  { label: "Free", value: "free" },
+  { label: "Pro", value: "pro" },
+  { label: "Team", value: "team" },
+  { label: "Enterprise (contact us)", value: "enterprise", disabled: true },
+];
+
+const billing = ref<string>("monthly");
+const billingOptions: SelectOption<string>[] = [
+  { label: "Monthly · $12/mo", value: "monthly" },
+  { label: "Yearly · $9/mo", value: "yearly" },
+];
+
+// Menu
+const menuItems: SelectOption<string>[] = [
+  { label: "Edit", value: "edit" },
+  { label: "Duplicate", value: "duplicate" },
+  { label: "Archive", value: "archive" },
+  { label: "Delete", value: "delete" },
+];
+
 // Dialog
 const dialogOpen = ref(false);
 const confirmOpen = ref(false);
@@ -182,6 +218,60 @@ const columns: TableColumn<Person>[] = [
           </template>
         </UiSelect>
       </div>
+    </section>
+
+    <section class="section">
+      <h2>Checkbox</h2>
+      <div class="col">
+        <UiCheckbox v-model="terms">I accept the terms</UiCheckbox>
+        <UiCheckbox v-model="newsletter" label="Send me product updates" />
+        <UiCheckbox :model-value="true" disabled label="Required (disabled)" />
+      </div>
+
+      <div class="col" style="margin-top: 0.5rem">
+        <UiCheckbox
+          v-model="allFruitsChecked"
+          :indeterminate="someFruitsChecked"
+          label="Select all"
+        />
+        <div class="col" style="padding-inline-start: 1.5rem; gap: 0.5rem">
+          <UiCheckbox
+            v-for="f in allFruitValues"
+            :key="f"
+            v-model="fruitsChecked"
+            :value="f"
+            :label="f"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Radio group</h2>
+      <UiRadioGroup v-model="plan" label="Plan" :options="planOptions" hint="Change anytime." />
+
+      <!-- Custom #option slot: card-style radios, no default circle. -->
+      <div class="card-radios">
+        <UiRadioGroup
+          v-model="billing"
+          label="Billing"
+          :options="billingOptions"
+          orientation="horizontal"
+        >
+          <template #option="{ option }">
+            <span class="card-radio-label">{{ option.label }}</span>
+          </template>
+        </UiRadioGroup>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Menu</h2>
+      <UiMenu
+        label="Actions ▾"
+        :items="menuItems"
+        @select="(v) => toast.success(`Selected: ${v}`)"
+      />
     </section>
 
     <section class="section">
@@ -587,6 +677,173 @@ const columns: TableColumn<Person>[] = [
 }
 .components :deep([data-part="option-label"]) {
   flex: 1;
+}
+
+/* Checkbox — hide the native input, style the control box via its pseudo-classes. */
+.components :deep([data-part="checkbox"]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.components :deep([data-part="checkbox"][data-checkbox-disabled]) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.components :deep([data-part="checkbox-input"]) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+.components :deep([data-part="checkbox-control"]) {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--accent-contrast);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.components :deep([data-part="checkbox-input"]:checked + [data-part="checkbox-control"]),
+.components :deep([data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"]) {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.components :deep([data-part="checkbox-input"]:checked + [data-part="checkbox-control"])::after {
+  content: "✓";
+  font-size: 0.75rem;
+  line-height: 1;
+}
+.components
+  :deep([data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"])::after {
+  content: "–";
+  font-weight: 700;
+  line-height: 1;
+}
+.components :deep([data-part="checkbox-input"]:focus-visible + [data-part="checkbox-control"]) {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.components :deep([data-part="checkbox-label"]) {
+  font-size: 0.9rem;
+}
+
+/* Radio group */
+.components :deep([data-part="radio-group"]) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.components :deep([data-part="radio-group"][data-orientation="horizontal"]) {
+  flex-direction: row;
+  gap: 1rem;
+}
+.components :deep([data-part="radio"]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0;
+  font: inherit;
+  color: var(--text);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: start;
+}
+.components :deep([data-part="radio"]:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.components :deep([data-part="radio-control"]) {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+}
+.components :deep([data-radio-checked] [data-part="radio-control"]) {
+  border-color: var(--accent);
+}
+.components :deep([data-radio-checked] [data-part="radio-control"])::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.components :deep([data-part="radio"]:focus-visible [data-part="radio-control"]) {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Custom card radios — the #option slot drops the circle, so the whole button
+   is the target. These rules come after the base radio skin, so they win. */
+.card-radios :deep([data-part="radio"]) {
+  padding: 0.7rem 1.1rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.card-radios :deep([data-part="radio"][data-radio-checked]) {
+  border-color: var(--accent);
+  background: color-mix(in oklch, var(--accent) 10%, transparent);
+}
+.card-radios :deep([data-part="radio"]:focus-visible) {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Menu */
+.components :deep([data-part="menu-trigger"]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.components :deep([data-part="menu-trigger"]:focus-visible) {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+.components :deep([data-part="menu-list"]) {
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.components :deep([data-part="menu-item"]) {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  font: inherit;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: start;
+}
+.components :deep([data-part="menu-item"][data-menu-active]) {
+  background: color-mix(in oklch, var(--accent) 14%, transparent);
+}
+.components :deep([data-part="menu-item"]:disabled) {
+  color: var(--text-muted);
+  cursor: not-allowed;
 }
 
 /* Tooltip */

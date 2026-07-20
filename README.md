@@ -75,7 +75,7 @@ the `notes:prune` `tasks` + `scheduledTasks` entries in `nuxt.config.ts`, and th
 
 ```
 app/                     # Vue frontend (SFC, <script setup lang="ts">)
-  components/ui/*        # shared, presentational UI
+  components/ui/*        # styleless base UI kit (see DOCS/ui)
   components/<feature>/* # feature-specific components
   composables/*          # kebab-case composables (use-*.ts)
   layouts/
@@ -99,6 +99,15 @@ shared/
 Server code follows a strict **Routes → Controllers → Services** layering.
 See [`DOCS/ARCHITECTURE.md`](./DOCS/ARCHITECTURE.md). Component and composable usage
 lives in [`DOCS/ui`](./DOCS/ui) and [`DOCS/composables`](./DOCS/composables).
+
+## UI
+
+Styleless base components in `app/components/ui/` (auto-imported: `<UiButton>`,
+`<UiInput>`, `<UiSelect>`, `<UiDialog>`, `<UiToast>`, `<UiTable>`, …). Behaviour, a11y
+and motion are built in; visuals are `data-part` / `data-<component>-*` hooks you style.
+See [`DOCS/ui`](./DOCS/ui/README.md) and the live `/components` page.
+Delete if you want to bring your own UI kit (Tailwind, UnoCSS, DaisyUI, Vuetify, etc.) — the
+app is agnostic, but the base components are a good starting point.
 
 ## Forms
 
