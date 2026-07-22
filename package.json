@@ -9,8 +9,8 @@
     "preview": "nuxt preview",
     "deploy": "nuxt build && wrangler deploy",
     "typecheck": "nuxt typecheck",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --fix --type-aware",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "format": "oxfmt --write",
     "test": "bun test --pass-with-no-tests",
     "db:generate": "drizzle-kit generate",
@@ -25,7 +25,7 @@
     "@nuxt/fonts": "0.14.0",
     "@vueuse/nuxt": "14.3.0",
     "drizzle-orm": "^0.45.2",
-    "evlog": "^2.22.0",
+    "evlog": "^2.22.1",
     "klona": "^2.0.6",
     "nanoid": "^6.0.0",
     "nuxt": "^4.5.0",
@@ -35,24 +35,24 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260719.1",
+    "@cloudflare/workers-types": "^5.20260722.1",
     "@types/node": "^26.1.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-seed": "^0.3.1",
     "nano-staged": "^1.0.2",
-    "oxfmt": "^0.59.0",
-    "oxlint": "^1.74.0",
-    "oxlint-tsgolint": "^0.25.0",
+    "oxfmt": "^0.60.0",
+    "oxlint": "^1.75.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "simple-git-hooks": "^2.13.1",
     "typescript": "^7.0.2",
-    "wrangler": "^4.112.0"
+    "wrangler": "^4.113.0"
   },
   "simple-git-hooks": {
     "pre-commit": "bunx nano-staged"
   },
   "nano-staged": {
     "*.{js,ts,vue}": [
-      "bunx oxlint --fix --type-aware",
+      "bunx oxlint --fix",
       "bunx oxfmt --write"
     ],
     "*.{scss,css}": "bunx oxfmt --write",
