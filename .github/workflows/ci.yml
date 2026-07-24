@@ -47,10 +47,8 @@ jobs:
       - name: Lint (type-aware — this is the type gate)
         run: bun run lint
 
-      # Type check disabled: vue-tsc can't load the pinned TypeScript 7 native
-      # preview (no ./lib/tsc export). Re-enable once vue-tsc supports it.
-      # - name: Type check
-      #   run: bun run typecheck
+      - name: Type check
+        run: bun run typecheck
 
       - name: Test
         run: bun run test

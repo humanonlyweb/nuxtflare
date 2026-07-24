@@ -25,7 +25,7 @@
     "@nuxt/fonts": "0.14.0",
     "@vueuse/nuxt": "14.3.0",
     "drizzle-orm": "^0.45.2",
-    "evlog": "^2.22.1",
+    "evlog": "^2.22.3",
     "klona": "^2.0.6",
     "nanoid": "^6.0.0",
     "nuxt": "^4.5.0",
@@ -35,7 +35,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260722.1",
+    "@cloudflare/workers-types": "^5.20260724.1",
     "@types/node": "^26.1.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-seed": "^0.3.1",
@@ -44,8 +44,12 @@
     "oxlint": "^1.75.0",
     "oxlint-tsgolint": "^7.0.2001",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "^7.0.2",
-    "wrangler": "^4.113.0"
+    "typescript": "npm:typescript-native-bridge@6.0.3-bridge.6.tsgo.7.0.2",
+    "vue-tsc": "^3.3.8",
+    "wrangler": "^4.114.0"
+  },
+  "overrides": {
+    "typescript": "$typescript"
   },
   "simple-git-hooks": {
     "pre-commit": "bunx nano-staged"
