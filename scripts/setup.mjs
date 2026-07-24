@@ -3,6 +3,13 @@ import { readFile, rm, writeFile } from "node:fs/promises";
 import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
 
+const FILES_TO_REMOVE = [
+  "scripts/setup.mjs",
+  "app/pages/components.vue",
+  "server/api/demo",
+  "shared/utils/schema-validation/demo.schema.ts",
+];
+
 const pkg = await readFile("package.json", "utf8");
 if (!/"name":\s*"template"/.test(pkg)) {
   console.error(
@@ -91,12 +98,20 @@ await edit("server/utils/constant.ts", (s) =>
 );
 await edit("app/layouts/default.vue", (s) => s.replaceAll("humanonlyweb", name));
 await edit("app/pages/auth/sign-in.vue", (s) => s.replaceAll("humanonlyweb starter", name));
-await edit("wrangler.jsonc", (s) =>
-  s
+await edit("wrangler.jsonc", (s) => {
+  const renamed = s
     .replace(/"name":\s*"template"/, `"name": "${name}"`)
-    .replace(/"database_name":\s*"template-db"/, `"database_name": "${name}-db"`)
-    .replace(/"pattern":\s*"template\.com"/, `"pattern": "${domain || "example.com"}"`),
-);
+    .replace(/"database_name":\s*"template-db"/, `"database_name": "${name}-db"`);
+
+  if (!domain) return renamed;
+
+  const routed = renamed.replace(/"pattern":\s*"[^"]*"/, `"pattern": "${domain}"`);
+  if (routed === renamed) {
+    warnings.push("wrangler.jsonc: routes[].pattern untouched — set your domain by hand");
+  }
+
+  return routed;
+});
 await edit(".github/workflows/ci.yml", (s) => s.replaceAll("template-db", `${name}-db`));
 
 if (dropNotes) {
@@ -151,11 +166,15 @@ await edit("package.json", (s) =>
     .replace(/"name":\s*"template"/, `"name": "${name}"`)
     .replace(/^.*"setup":.*scripts\/setup\.mjs.*\r?\n/m, ""),
 );
-await Promise.all(["scripts/setup.mjs", "app/pages/components.vue"].map(del));
+await edit("shared/utils/schema-validation/index.ts", (s) =>
+  s.replace(/^export \* from "\.\/demo\.schema";\r?\n/m, ""),
+);
+await Promise.all(FILES_TO_REMOVE.map(del));
 
 console.log(`\n✔ Renamed project to "${name}".`);
 console.log(
-  "  Removed: setup script, /components demo page" + (dropNotes ? ", notes feature" : ""),
+  "  Removed: setup script, /components demo page + its API route" +
+    (dropNotes ? ", notes feature" : ""),
 );
 for (const w of warnings) console.log(`  ! ${w}`);
 

@@ -1,12 +1,11 @@
 # UiIcon
 
-Renders one symbol from the SVG sprite. Auto-imported as `<UiIcon>` from
-`app/components/ui/icon.vue`.
+Renders one symbol from the SVG sprite.
 
-Every other component takes its icons as slots; `UiSelect`, `UiAccordionItem`, `UiDialog`
-and `UiToast` default those slots to `UiIcon` (`chevron-down`, `check`, `x`) so they look
-right untouched. Override the slot to pass your own `<svg>` or an icon library — replacing
-`UiIcon` outright means updating those four defaults too.
+Every other component takes icons as slots; `UiSelect`, `UiAccordionItem`, `UiDialog` and
+`UiToast` default those slots to `UiIcon` (`chevron-down`, `check`, `x`). Override the slot
+to pass your own `<svg>` or an icon library — replacing `UiIcon` outright means updating
+those four defaults too.
 
 ## Props
 
@@ -16,27 +15,24 @@ right untouched. Override the slot to pass your own `<svg>` or an icon library �
 | `size`  | `` `${number}px` `` | —       | Sets `--icon-size` inline; omit to inherit |
 | `label` | `string`            | —       | Accessible name; omit for decorative icons |
 
-`IconName` is a union in `app/types/components.type.ts`, so a typo is a type error
-rather than an invisible empty box.
+`IconName` is a union in `app/types/components.type.ts`, so a typo is a type error rather
+than an invisible empty box.
 
 ## Accessibility
 
 `label` decides how the icon is exposed:
 
-- **omitted** (default) → `aria-hidden="true"`. Correct when the icon sits next to text,
-  or inside a `UiIconButton` that already carries the label — otherwise the name is
-  announced twice.
-- **provided** → `role="img"` + `aria-label`. Use when the icon is the only content and
-  nothing else names it.
+- **omitted** → `aria-hidden="true"`. Right when the icon sits next to text, or inside a
+  `UiIconButton` that already carries the label — otherwise the name is announced twice.
+- **provided** → `role="img"` + `aria-label`. Use when the icon is the only content.
 
-`focusable="false"` is always set (IE/Edge legacy would otherwise put SVGs in the tab order).
+`focusable="false"` is always set (legacy IE/Edge would otherwise put SVGs in the tab
+order).
 
 ## Styling hooks
 
-`data-part="icon"`, plus the `--icon-size` custom property.
-
-The component ships no CSS. Give it a size in your stylesheet — an `<svg>` with no
-dimensions falls back to the SVG default of 300×150:
+`data-part="icon"` plus the `--icon-size` custom property. No CSS ships — give it a size,
+or an `<svg>` with no dimensions falls back to the SVG default of 300×150:
 
 ```css
 [data-part="icon"] {
@@ -46,8 +42,8 @@ dimensions falls back to the SVG default of 300×150:
 }
 ```
 
-The `1em` fallback makes icons scale with the surrounding font size, so they track button
-and heading sizes automatically. The `size` prop overrides it per instance.
+The `1em` fallback makes icons track the surrounding font size; `size` overrides it per
+instance.
 
 ## Usage
 
@@ -59,8 +55,8 @@ and heading sizes automatically. The `size` prop overrides it per instance.
 
 ## The sprite
 
-Icons live in one file, `public/assets/icon-sprite.svg`, as `<symbol>` elements whose ids
-are prefixed `i-`. `UiIcon` references them as `/assets/icon-sprite.svg#i-<name>`.
+Icons live in `public/assets/icon-sprite.svg` as `<symbol>`s with `i-`-prefixed ids.
+`UiIcon` references them as `/assets/icon-sprite.svg#i-<name>`.
 
 ```svg
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
@@ -81,26 +77,25 @@ are prefixed `i-`. `UiIcon` references them as `/assets/icon-sprite.svg#i-<name>
 
 ### Adding an icon
 
-1. Paste the icon's paths into a new `<symbol id="i-<name>" viewBox="…">` in the sprite.
+1. Paste the paths into a new `<symbol id="i-<name>" viewBox="…">` in the sprite.
 2. Add `"<name>"` to the `IconName` union in `app/types/components.type.ts`.
 
-Two steps, both mechanical — but skipping step 2 means the name won't typecheck, and
-skipping step 1 means it typechecks and renders nothing.
+Skip step 2 and the name won't typecheck; skip step 1 and it typechecks but renders
+nothing.
 
 ### Conventions that matter
 
 - **`currentColor`, never a hard-coded colour.** It resolves against the _referencing_
-  element, so an icon takes the colour of the button or link it sits in, and follows
-  light/dark automatically.
+  element, so an icon takes the colour of the button or link it sits in and follows
+  light/dark for free.
 - **Set `fill`/`stroke` on the `<symbol>`, not the `<use>`.** `icon.vue` puts
-  `fill="currentColor"` on the outer `<svg>` as the default; stroke-style icons override it
-  with `fill="none" stroke="currentColor"` on their own symbol.
-- **Keep one `viewBox` per sprite** (this one is `0 0 24 24`) so stroke widths stay
-  visually consistent across icons.
+  `fill="currentColor"` on the outer `<svg>`; stroke-style icons override it with
+  `fill="none" stroke="currentColor"` on their own symbol.
+- **One `viewBox` per sprite** (this one is `0 0 24 24`) so stroke widths stay consistent.
 
 ### Why a sprite
 
-One cached request for the whole set, no per-icon component, no build step, and no icon
-library in the bundle. The tradeoff: the sprite is fetched separately, so the very first
-icon paint can lag the HTML by a frame. If that matters more than the caching, inline the
-`<svg>` sprite into `app.vue` instead and drop the file path from `icon.vue`.
+One cached request for the whole set, no per-icon component, no build step, no icon library
+in the bundle. Tradeoff: the sprite is a separate fetch, so the first icon paint can lag
+the HTML by a frame. If that bothers you more than the caching helps, inline the sprite
+into `app.vue` and drop the file path from `icon.vue`.

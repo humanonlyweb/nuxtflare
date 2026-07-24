@@ -9,6 +9,7 @@ const isTask = (f) => f.endsWith(".task.ts");
 const isContainer = (f) => /utils[\\/]container\.ts$/.test(f);
 const isValidationUtil = (f) => /utils[\\/]validation\.ts$/.test(f);
 const isServer = (f) => /(^|[\\/])server[\\/]/.test(f);
+const isSchemaModule = (f) => /shared[\\/]utils[\\/]schema-validation[\\/]/.test(f);
 
 const fileOf = (context) =>
   context.filename ?? context.physicalFilename ?? context.getFilename?.() ?? "";
@@ -37,7 +38,24 @@ const HTTP_CALLS = new Set([
   "sendRedirect",
   "useLogger",
   "createContainer",
+  "assertWithinRateLimit",
+  "checkRateLimit",
+  "clientIp",
+  "deleteCookie",
 ]);
+
+const BUILTIN_ERRORS = new Set([
+  "Error",
+  "TypeError",
+  "RangeError",
+  "SyntaxError",
+  "EvalError",
+  "ReferenceError",
+  "URIError",
+  "AggregateError",
+]);
+
+const AUTH_CALLS = new Set(["requireUserSession", "getUserSession"]);
 
 // Raw h3 readers that skip validation → each maps to its validation.ts wrapper.
 const UNVALIDATED_READS = new Map([
@@ -147,12 +165,108 @@ const noServiceInstantiationOutsideContainer = {
   },
 };
 
+const authorizeBeforeValidate = {
+  create(context) {
+    if (!isController(fileOf(context))) return {};
+
+    return {
+      CallExpression(node) {
+        const callee = node.callee;
+        if (
+          callee?.type !== "MemberExpression" ||
+          callee.object?.name !== "Promise" ||
+          !["all", "allSettled"].includes(callee.property?.name)
+        ) {
+          return;
+        }
+
+        const names = (node.arguments[0]?.elements ?? [])
+          .filter((element) => element?.type === "CallExpression")
+          .map((element) => calleeName(element))
+          .filter(Boolean);
+
+        const authCall = names.find((name) => AUTH_CALLS.has(name));
+        if (!authCall || !names.some((name) => name.startsWith("validate"))) return;
+
+        context.report({
+          node,
+          message: `Await ${authCall}() before validating. Racing them lets an anonymous request reach the parser, so a bad body answers 400 (and leaks the schema) where it should answer 401.`,
+        });
+      },
+    };
+  },
+};
+
+const noRawErrorThrow = {
+  create(context) {
+    if (!isServer(fileOf(context))) return {};
+
+    return {
+      ThrowStatement(node) {
+        const name =
+          node.argument?.type === "NewExpression" ? calleeName(node.argument) : undefined;
+
+        if (name && BUILTIN_ERRORS.has(name)) {
+          context.report({
+            node,
+            message: `Throwing a raw ${name} answers 500 with no status or code. Use Errors.* from server/utils/error.ts, or a domain error class the controller maps.`,
+          });
+        }
+      },
+    };
+  },
+};
+
+const noProcessEnv = {
+  create(context) {
+    if (!isServer(fileOf(context))) return {};
+
+    return {
+      MemberExpression(node) {
+        if (node.object?.name === "process" && node.property?.name === "env") {
+          context.report({
+            node,
+            message:
+              "process.env is inlined at build time on Workers and is empty for per-request values. Use useRuntimeConfig(event) for config and event.context.cloudflare.env for bindings.",
+          });
+        }
+      },
+    };
+  },
+};
+
+const zodSchemasInShared = {
+  create(context) {
+    if (isSchemaModule(fileOf(context))) return {};
+
+    return {
+      ImportDeclaration(node) {
+        const source = node.source.value;
+        if (typeof source !== "string" || (source !== "zod" && !source.startsWith("zod/"))) return;
+        // `import type { ZodType }` is generic plumbing, not a schema definition.
+        if (node.importKind === "type") return;
+        if (!(node.specifiers ?? []).some((specifier) => specifier.importKind !== "type")) return;
+
+        context.report({
+          node,
+          message:
+            "Define Zod schemas in shared/utils/schema-validation/<feature>.schema.ts and import them from #shared/utils/schema-validation, so client and server validate against one shape. Type-only imports are fine.",
+        });
+      },
+    };
+  },
+};
+
 export default {
   meta: { name: "arch" },
   rules: {
-    "no-db-access-in-controllers": noDbInControllers,
-    "no-http-in-services": noHttpInServices,
-    "no-unvalidated-request-reads": noUnvalidatedRequestReads,
     "no-service-instantiation-outside-container": noServiceInstantiationOutsideContainer,
+    "no-unvalidated-request-reads": noUnvalidatedRequestReads,
+    "authorize-before-validate": authorizeBeforeValidate,
+    "no-db-access-in-controllers": noDbInControllers,
+    "zod-schemas-in-shared": zodSchemasInShared,
+    "no-http-in-services": noHttpInServices,
+    "no-raw-error-throw": noRawErrorThrow,
+    "no-process-env": noProcessEnv,
   },
 };

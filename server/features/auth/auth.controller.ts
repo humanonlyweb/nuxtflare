@@ -17,6 +17,10 @@ export class AuthController {
     const redirect = safeRedirectPath(getCookie(event, AUTH_REDIRECT_COOKIE));
     deleteCookie(event, AUTH_REDIRECT_COOKIE);
 
+    if (!(await checkRateLimit(event, { key: `oauth:${clientIp(event)}` }))) {
+      return sendRedirect(event, "/auth/sign-in?error=rate-limited");
+    }
+
     try {
       const { user, linked, isNew } = await this.auth.findOrCreateByOAuth(identity);
       await setUserSession(event, { user });

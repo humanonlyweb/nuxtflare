@@ -1,28 +1,27 @@
 # UiAccordion
 
-Stacked disclosure sections (WAI-ARIA
-[accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern). Auto-imported
-as `<UiAccordion>` (`accordion/index.vue`) and `<UiAccordionItem>` (`accordion/item.vue`).
-Two components because panel content is arbitrary — items are written as markup, not data.
+Stacked disclosure sections
+([accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern). Two components
+because panel content is arbitrary — items are markup, not data.
 
 ## UiAccordion
 
 | Prop          | Type      | Default | Notes                                           |
 | ------------- | --------- | ------- | ----------------------------------------------- |
-| `multiple`    | `boolean` | `false` | Allow several panels open at once               |
+| `multiple`    | `boolean` | `false` | Several panels open at once                     |
 | `collapsible` | `boolean` | `true`  | Single mode only — `false` keeps one panel open |
 
-`v-model` binds the open item's `value` (a `string`, or `undefined` when all are closed);
-with `multiple`, a `string[]`.
+`v-model` binds the open item's `value` (a `string`, `undefined` when all closed), or a
+`string[]` with `multiple`.
 
 ## UiAccordionItem
 
 | Prop       | Type                    | Default | Notes                                      |
 | ---------- | ----------------------- | ------- | ------------------------------------------ |
 | `value`    | `string`                | —       | Required; identifies the item in `v-model` |
-| `title`    | `string`                | —       | Header text (or use the `title` slot)      |
+| `title`    | `string`                | —       | Or use the `title` slot                    |
 | `disabled` | `boolean`               | `false` |                                            |
-| `level`    | `2 \| 3 \| 4 \| 5 \| 6` | `3`     | Heading level wrapping the trigger         |
+| `level`    | `2 \| 3 \| 4 \| 5 \| 6` | `3`     | Heading level around the trigger           |
 
 | Slot        | Props      | Purpose                                                     |
 | ----------- | ---------- | ----------------------------------------------------------- |
@@ -34,14 +33,13 @@ with `multiple`, a `string[]`.
 
 `data-part="accordion" | "accordion-item" | "accordion-heading" | "accordion-trigger" |
 "accordion-title" | "accordion-indicator" | "accordion-panel" | "accordion-content"`.
-State: `data-accordion-open` (item, trigger and panel). `aria-expanded` and
-`aria-disabled` are on the trigger.
+State: `data-accordion-open` (item, trigger, panel), plus `aria-expanded` /
+`aria-disabled` on the trigger.
 
-The open/close height animation ships inside the component. Put panel padding on
-`[data-part="accordion-content"]` — **not** on `accordion-panel`. The panel is the grid
-container that animates, and padding on its grid item counts toward the track's base
-size, so a padded item never collapses fully. `accordion-clip` sits between the two to
-keep the grid item padding-free; it's mechanism, not a styling hook.
+Put panel padding on `[data-part="accordion-content"]` — **not** on `accordion-panel`. The
+panel is the grid container that animates, and padding on its grid item counts toward the
+track's base size, so a padded item never collapses fully. `accordion-clip` sits between
+the two to keep the grid item padding-free; it's mechanism, not a styling hook.
 
 ## Usage
 
@@ -52,17 +50,16 @@ keep the grid item padding-free; it's mechanism, not a styling hook.
   </UiAccordionItem>
 </UiAccordion>
 
-<!-- Several panels open at once -->
 <UiAccordion v-model="openSections" multiple> … </UiAccordion>
 ```
 
 ## Notes
 
 - Keyboard: Enter/Space toggles, ↑/↓ move between headers (wrapping), Home/End jump to
-  the first/last. Each header is its own tab stop, per the pattern.
-- Panels animate `grid-template-rows: 0fr → 1fr`, so content height is never measured in
-  JS and dynamic content just works. Collapsing runs faster than expanding.
-- A closed panel is `inert`, keeping its content out of the tab order and the a11y tree
-  while it stays in the DOM for the transition.
-- With `collapsible: false`, the open header gets `aria-disabled` rather than `disabled` —
-  it stays focusable, as the pattern requires.
+  first/last. Each header is its own tab stop, per the pattern.
+- Panels animate `grid-template-rows: 0fr → 1fr`, so height is never measured in JS and
+  dynamic content just works. Collapsing runs faster than expanding.
+- A closed panel is `inert` — out of the tab order and the a11y tree, but still in the DOM
+  for the transition.
+- With `collapsible: false` the open header gets `aria-disabled`, not `disabled`, so it
+  stays focusable as the pattern requires.

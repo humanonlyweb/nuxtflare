@@ -1,14 +1,13 @@
 # UiTable
 
-Data table. Auto-imported as `<UiTable>` from `app/components/ui/table/index.vue`,
-generic over the row type `T`. Two ways to use it: pass `columns` + `rows` for the
-common case, or compose the primitives directly for full control.
+Data table, generic over the row type `T`. Pass `columns` + `rows` for the common case, or
+compose the primitives for full control.
 
 ## Props
 
 | Prop           | Type                                   | Default | Notes                                         |
 | -------------- | -------------------------------------- | ------- | --------------------------------------------- |
-| `columns`      | `TableColumn<T>[]`                     | —       | Column defs (see below)                       |
+| `columns`      | `TableColumn<T>[]`                     | —       | Column defs                                   |
 | `rows`         | `T[]`                                  | —       | Row data                                      |
 | `rowKey`       | `keyof T \| ((row, i) => PropertyKey)` | index   | Stable `:key` per row                         |
 | `caption`      | `string`                               | —       | Accessible caption; makes it a `region`       |
@@ -19,7 +18,7 @@ common case, or compose the primitives directly for full control.
 `TableColumn<T>` (`~/types/components.type`):
 `{ key, header, accessor?, align?, numeric?, width? }`.
 
-### Slots
+## Slots
 
 - `` `${column.key}-cell` `` — `{ row, value, column, rowIndex }`
 - `` `${column.key}-header` `` — `{ column }`
@@ -28,9 +27,9 @@ common case, or compose the primitives directly for full control.
 
 ## Composition primitives
 
-For bespoke tables, use the parts directly (also auto-imported):
-`<UiTableHeader :sticky :sr-only>`, `<UiTableRow :interactive @click>`,
-`<UiTableCell as="td|th" :align :numeric :scope>`, `<UiTableFooter>`.
+Also auto-imported, for bespoke tables: `<UiTableHeader :sticky :sr-only>`,
+`<UiTableRow :interactive @click>`, `<UiTableCell as="td|th" :align :numeric :scope>`,
+`<UiTableFooter>`.
 
 ## Styling hooks
 
@@ -50,5 +49,5 @@ For bespoke tables, use the parts directly (also auto-imported):
 ## Notes
 
 - The wrapper scrolls horizontally so wide tables never overflow the page.
-- Only functional CSS ships (scroll, sticky positioning, visually-hidden header); all
-  borders, padding and typography are your skin.
+- Only functional CSS ships (scroll, sticky, visually-hidden header) — borders, padding and
+  typography are your skin.
