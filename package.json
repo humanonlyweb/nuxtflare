@@ -17,13 +17,14 @@
     "db:migrate:local": "wrangler d1 migrations apply DB --local",
     "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
     "setup": "node scripts/setup.mjs",
-    "postinstall": "nuxt prepare && simple-git-hooks",
+    "postinstall": "nuxt prepare",
     "prepare": "simple-git-hooks || exit 0"
   },
   "dependencies": {
     "@comark/nuxt": "0.5.1",
     "@nuxt/fonts": "0.14.0",
     "@vueuse/nuxt": "14.3.0",
+    "dequal": "^2.0.3",
     "drizzle-orm": "^0.45.2",
     "evlog": "^2.22.3",
     "klona": "^2.0.6",
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260724.1",
+    "@types/bun": "^1.3.14",
     "@types/node": "^26.1.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-seed": "^0.3.1",
