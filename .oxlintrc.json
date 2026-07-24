@@ -23,13 +23,25 @@
     "arch/no-db-access-in-controllers": "error",
     "arch/no-http-in-services": "error",
     "arch/no-unvalidated-request-reads": "error",
-    "arch/no-service-instantiation-outside-container": "error"
+    "arch/no-service-instantiation-outside-container": "error",
+    "arch/authorize-before-validate": "error",
+    "arch/no-raw-error-throw": "error",
+    "arch/zod-schemas-in-shared": "error",
+    "arch/no-process-env": "error"
   },
   "overrides": [
     {
-      "files": ["test/e2e/**/*.ts"],
+      "files": ["**/*.test.ts"],
       "rules": {
-        "jest/valid-describe-callback": "off"
+        "no-console": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "arch/no-service-instantiation-outside-container": "off"
+      }
+    },
+    {
+      "files": ["scripts/**/*.mjs", "tools/**/*.mjs"],
+      "rules": {
+        "no-console": "off"
       }
     }
   ]

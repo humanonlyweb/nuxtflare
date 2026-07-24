@@ -1,15 +1,14 @@
 # Auth (OAuth)
 
-OAuth sign-in with **GitHub** and **Google** via
-[nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils). A successful callback
-resolves the provider identity to a local user (`findOrCreateByOAuth`) and sets a
-sealed session cookie.
+GitHub + Google sign-in via [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils).
+A successful callback resolves the provider identity to a local user
+(`findOrCreateByOAuth`) and sets a sealed session cookie.
 
 ## Flow
 
 ```
 /auth/github (or /google) → provider → onSuccess (normalize → OAuthIdentity)
-  → authController.oauthSuccess → AuthService.findOrCreateByOAuth
+  → authController.oauthSuccess → rate-limit gate → AuthService.findOrCreateByOAuth
   → setUserSession → redirect (or /auth/sign-in?error=… on failure)
 ```
 
@@ -19,12 +18,18 @@ sealed session cookie.
 2. **Email exists** (verified) → link provider (`linked: true`).
 3. **New email** → create account (`isNew: true`).
 
-Creating or linking needs a **verified** provider email; otherwise
-`UnverifiedOAuthEmailError` → `/auth/sign-in?error=oauth-unverified`.
+Creating or linking needs a **verified** provider email — otherwise
+`UnverifiedOAuthEmailError` → `?error=oauth-unverified`. Failures come back as `?error=`
+codes that `app/pages/auth/sign-in.vue` maps to copy: `oauth`, `oauth-unverified`,
+`rate-limited`.
 
-Concurrent first sign-ins are race-safe: the user insert is `onConflictDoNothing`
-on email with a re-lookup on conflict, and provider links ignore duplicates —
-so a lost race links instead of surfacing a unique-constraint 500.
+Concurrent first sign-ins are race-safe: the user insert is `onConflictDoNothing` on email
+with a re-lookup, and provider links ignore duplicates — a lost race links instead of
+throwing a unique-constraint 500.
+
+The callback is rate-limited per IP (`oauth:<ip>`) because it creates users and sends
+mail. It redirects rather than throws, since a 429 mid-redirect reaches the browser as raw
+JSON. With no `RATE_LIMIT` binding (`nuxt dev`) it warns and allows.
 
 ## Files
 
@@ -39,14 +44,14 @@ so a lost race links instead of surfacing a unique-constraint 500.
 | `app/composables/use-auth.ts`               | `useAuth()`                           |
 | `app/pages/auth/sign-in.vue`                | Provider buttons                      |
 | `app/middleware/{auth,guest}.ts`            | Route protection                      |
-| `shared/utils/safe-redirect.ts`             | `?redirect` cookie name + sanitizer   |
+| `shared/utils/links.ts`                     | `?redirect` cookie name + sanitizer   |
 
 ## Setup
 
 1. Copy `.env.example` → `.env`. `NUXT_SESSION_PASSWORD` must be ≥32 chars
    (`openssl rand -base64 32`).
-2. Register OAuth apps with callback URLs `<origin>/auth/github` and
-   `<origin>/auth/google` ([GitHub](https://github.com/settings/developers),
+2. Register OAuth apps with callback URLs `<origin>/auth/github` and `<origin>/auth/google`
+   ([GitHub](https://github.com/settings/developers),
    [Google](https://console.cloud.google.com/apis/credentials)).
 3. In production, set the same values as Worker secrets: `bunx wrangler secret put <NAME>`.
 
@@ -54,30 +59,29 @@ so a lost race links instead of surfacing a unique-constraint 500.
 
 ```ts
 const { user, loggedIn, signout } = useAuth(); // client
-const { user } = await requireUserSession(event); // server — enforce access
+const { user } = await requireUserSession(event); // server — this is the check that counts
 ```
 
-Sign-out uses nuxt-auth-utils' built-in clear endpoint (`useAuth().signout()`) — no custom route.
+Sign-out uses nuxt-auth-utils' built-in clear endpoint — no custom route.
 
-Protect pages with named middleware (UI gate only; server handlers must still call
+Protect pages with named middleware (a UI gate; server handlers still call
 `requireUserSession`):
 
 ```ts
 definePageMeta({ middleware: "auth" });
 ```
 
-`?redirect` survives the OAuth round-trip: the sign-in page stashes it in a
-short-lived `auth_redirect` cookie, and `oauthSuccess` reads (and clears) it,
-accepting only same-site paths via `safeRedirectPath`
-(`shared/utils/safe-redirect.ts` — also used by the `guest` middleware). Without
-it, post-login lands on `/`.
+`?redirect` survives the OAuth round-trip: the sign-in page stashes it in a short-lived
+`auth_redirect` cookie, and `oauthSuccess` reads and clears it, accepting only same-site
+paths via `safeRedirectPath` (`shared/utils/links.ts`, also used by the `guest`
+middleware). Without it, post-login lands on `/`.
 
 ## Adding a provider
 
-Add it to `OAUTH_PROVIDERS` (`server/utils/constant.ts`) and a
-`server/routes/auth/<provider>.get.ts` that normalizes the payload to an
-`OAuthIdentity` (nuxt-auth-utils ships `defineOAuth<Provider>EventHandler`), then add
-its env vars. No service changes.
+Add it to `OAUTH_PROVIDERS` (`server/utils/constant.ts`) and write
+`server/routes/auth/<provider>.get.ts` normalizing the payload to an `OAuthIdentity`
+(nuxt-auth-utils ships `defineOAuth<Provider>EventHandler`), then add its env vars. No
+service changes.
 
 ## Removing auth
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DEMO_TAKEN_EMAIL, demoProfileSchema } from "#shared/utils/schema-validation";
 import type { SelectOption, TableColumn } from "~/types/components.type";
 
 useSeoMeta({
@@ -114,6 +115,26 @@ const columns: TableColumn<Person>[] = [
   { key: "role", header: "Role" },
   { key: "commits", header: "Commits", numeric: true },
 ];
+
+const formRef = useTemplateRef("profileFormRef");
+const {
+  form: profile,
+  errors: profileErrors,
+  isValid: profileValid,
+  isDirty: profileDirty,
+  shouldDisableSubmit: profileBusy,
+  submit: submitProfile,
+  reset: resetProfile,
+} = useForm({
+  validationSchema: demoProfileSchema,
+  initialValues: { fullName: "", email: "", headline: "", acceptTerms: false },
+  formRef,
+  onSubmit: async (values) => {
+    await $fetch("/api/demo/profile", { method: "POST", body: values });
+    toast.success(`Saved ${values.fullName}.`);
+  },
+  onError: () => toast.error("The server rejected that — check the highlighted field."),
+});
 </script>
 
 <template>
@@ -318,6 +339,64 @@ const columns: TableColumn<Person>[] = [
     </section>
 
     <section class="section">
+      <h2>Form (useForm)</h2>
+      <p class="section-note">
+        Zod-driven validation, touched-on-blur errors, dirty tracking and server-side field errors.
+        Submit stays enabled while invalid — pressing it reveals every message and focuses the first
+        bad field, instead of leaving a dead button with no explanation. It posts to
+        <code>/api/demo/profile</code>, which answers <code>409</code> for one reserved address, so
+        the server-error path is the real one — nothing is faked client-side.
+      </p>
+
+      <form ref="profileFormRef" class="demo-form" novalidate @submit="submitProfile">
+        <UiInput
+          v-model="profile.fullName"
+          name="fullName"
+          label="Full name"
+          placeholder="Ada Lovelace"
+          :error="profileErrors.fullName"
+        />
+        <UiInput
+          v-model="profile.email"
+          name="email"
+          type="email"
+          label="Email"
+          placeholder="ada@example.com"
+          :hint="`Try ${DEMO_TAKEN_EMAIL} — the server rejects it.`"
+          :error="profileErrors.email"
+        />
+        <UiTextarea
+          v-model="profile.headline"
+          name="headline"
+          label="Headline"
+          optional
+          :rows="2"
+          hint="Shown under your name."
+          :error="profileErrors.headline"
+        />
+
+        <div>
+          <UiCheckbox v-model="profile.acceptTerms" name="acceptTerms">
+            I accept the terms
+          </UiCheckbox>
+          <p v-if="profileErrors.acceptTerms" class="demo-form-error" role="alert">
+            {{ profileErrors.acceptTerms }}
+          </p>
+        </div>
+
+        <div class="row">
+          <UiButton type="submit" :loading="profileBusy">Save profile</UiButton>
+          <UiButton type="button" variant="ghost" :disabled="!profileDirty" @click="resetProfile">
+            Reset
+          </UiButton>
+          <span class="demo-form-state">
+            valid: {{ profileValid }} · dirty: {{ profileDirty }}
+          </span>
+        </div>
+      </form>
+    </section>
+
+    <section class="section">
       <h2>Menu</h2>
       <UiMenu :items="menuItems" @select="(v) => toast.success(`Selected: ${v}`)">
         <template #trigger>Actions <UiIcon name="chevron-down" /></template>
@@ -467,6 +546,32 @@ const columns: TableColumn<Person>[] = [
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
+}
+
+.section-note {
+  max-width: 60ch;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.demo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 26rem;
+}
+
+.demo-form-error {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--danger, #dc2626);
+}
+
+.demo-form-state {
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 
 .col {

@@ -1,4 +1,4 @@
-import type { D1Database, Fetcher, SendEmail } from "@cloudflare/workers-types";
+import type { D1Database, Fetcher, RateLimit, SendEmail } from "@cloudflare/workers-types";
 
 declare global {
   namespace Cloudflare {
@@ -6,6 +6,7 @@ declare global {
       DB: D1Database;
       ASSETS: Fetcher;
       EMAIL: SendEmail;
+      RATE_LIMIT: RateLimit;
     }
   }
 }

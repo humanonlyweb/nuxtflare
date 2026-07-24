@@ -1,12 +1,16 @@
+import { dequal } from "dequal";
 import { klona } from "klona";
 import type { Ref } from "vue";
 import type { z, ZodType } from "zod";
+
+import { fieldErrorsFrom, type FieldErrors as ServerFieldErrors } from "#shared/utils/api-error";
 
 export type FormValues = Record<string, unknown>;
 type FieldErrors<T> = Partial<Record<keyof T, string>>;
 
 export interface UseFormOptions<Schema extends ZodType<FormValues, FormValues>> {
   onSubmit: (values: z.output<Schema>) => void | Promise<void>;
+  onError?: (error: unknown) => void;
   formRef?: Readonly<Ref<HTMLElement | null>>;
   validateOn?: "blur" | "input" | "submit";
   initialValues: z.input<Schema>;
@@ -20,6 +24,7 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
   validationSchema,
   initialValues,
   onSubmit,
+  onError,
   formRef,
 }: UseFormOptions<Schema>) {
   type Values = z.input<Schema>;
@@ -27,6 +32,7 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
   const baseline = shallowRef<Values>(clone(initialValues));
   const form = reactive(clone(initialValues));
   const touched = reactive(new Set<string>());
+  const serverErrors = ref<ServerFieldErrors>({});
   const processing = ref(false);
   const submitted = ref(false);
 
@@ -50,44 +56,71 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
     }
     // Zod issue paths are strings, and always name a real field of the schema.
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
-    return visible as FieldErrors<Values>;
+    return { ...visible, ...serverErrors.value } as FieldErrors<Values>;
   });
 
   const isValid = computed(() => Object.keys(fieldErrors.value).length === 0);
-  const isDirty = computed(() => JSON.stringify(form) !== JSON.stringify(baseline.value));
-  const shouldDisableSubmit = computed(() => processing.value || !isValid.value);
+  const isDirty = computed(() => !dequal(toRaw(form), baseline.value));
+  const shouldDisableSubmit = computed(() => processing.value);
 
-  function validateField(field: keyof Values) {
-    touched.add(String(field));
+  function fieldNameOf(event: Event): string | undefined {
+    const target = event.target;
+    const isControl =
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement;
+
+    return isControl && target.name && target.name in form ? target.name : undefined;
   }
 
-  function onFieldEvent(event: Event) {
-    const target = event.target;
-    if (
-      (target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement) &&
-      target.name &&
-      target.name in form
-    ) {
-      touched.add(target.name);
+  function clearServerError(field: string) {
+    if (!(field in serverErrors.value)) return;
+    const { [field]: _removed, ...rest } = serverErrors.value;
+    serverErrors.value = rest;
+  }
+
+  if (formRef) {
+    useEventListener(formRef, "input", (event: Event) => {
+      const field = fieldNameOf(event);
+      if (!field) return;
+      clearServerError(field);
+      if (validateOn === "input") touched.add(field);
+    });
+
+    if (validateOn === "blur") {
+      useEventListener(formRef, "focusout", (event: Event) => {
+        const field = fieldNameOf(event);
+        if (field) touched.add(field);
+      });
     }
   }
 
-  if (formRef && validateOn !== "submit") {
-    useEventListener(formRef, validateOn === "input" ? "input" : "focusout", onFieldEvent);
+  async function focusFirstError() {
+    await nextTick();
+    formRef?.value?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+  }
+
+  function setErrors(fields: ServerFieldErrors) {
+    serverErrors.value = { ...fields };
+    submitted.value = true;
+  }
+
+  function validateField(field: keyof Values) {
+    touched.add(String(field));
   }
 
   function setValues(values: Partial<Values>) {
     Object.assign(form, values);
     baseline.value = clone(form);
     touched.clear();
+    serverErrors.value = {};
     submitted.value = false;
   }
 
   function reset() {
     Object.assign(form, clone(baseline.value));
     touched.clear();
+    serverErrors.value = {};
     submitted.value = false;
     processing.value = false;
   }
@@ -95,13 +128,26 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
   async function submit(event?: Event) {
     event?.preventDefault();
     submitted.value = true;
+    serverErrors.value = {};
 
-    if (!isValid.value) return;
+    if (!isValid.value) {
+      await focusFirstError();
+      return;
+    }
 
     processing.value = true;
 
     try {
       await onSubmit(validationSchema.parse(form));
+    } catch (error) {
+      const fields = fieldErrorsFrom(error);
+      if (fields) {
+        setErrors(fields);
+        await focusFirstError();
+      }
+
+      if (onError) onError(error);
+      else if (!fields) throw error;
     } finally {
       processing.value = false;
     }
@@ -113,6 +159,7 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
     processing,
     shouldDisableSubmit,
     validateField,
+    setErrors,
     setValues,
     isValid,
     isDirty,

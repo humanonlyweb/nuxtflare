@@ -13,19 +13,15 @@ export class NotesController {
   }
 
   async get(event: H3Event) {
-    const [{ id }, user] = await Promise.all([
-      validateRouterParams(event, noteIdSchema),
-      requireUserSession(event),
-    ]);
+    const { user } = await requireUserSession(event);
+    const { id } = await validateRouterParams(event, noteIdSchema);
 
     return this.notes.getById({ id, userId: user.id });
   }
 
   async create(event: H3Event) {
-    const [input, { user }] = await Promise.all([
-      validateRequestBody(event, createNoteSchema),
-      requireUserSession(event),
-    ]);
+    const { user } = await requireUserSession(event);
+    const input = await validateRequestBody(event, createNoteSchema);
 
     const note = await this.notes.create({ input, userId: user.id });
     setResponseStatus(event, 201);
@@ -43,10 +39,8 @@ export class NotesController {
   }
 
   async remove(event: H3Event) {
-    const [{ id }, user] = await Promise.all([
-      validateRouterParams(event, noteIdSchema),
-      requireUserSession(event),
-    ]);
+    const { user } = await requireUserSession(event);
+    const { id } = await validateRouterParams(event, noteIdSchema);
 
     await this.notes.remove({ id, userId: user.id });
     setResponseStatus(event, 204);

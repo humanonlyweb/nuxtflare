@@ -7,25 +7,28 @@ import { NotesController } from "#server/features/notes/notes.controller";
 import { NotesService } from "#server/features/notes/notes.service";
 
 // Single source of truth for dependency injection. Lighter than a full DI framework.
-// The db is built lazily so a request only constructs what it hits.
 export function createContainer(event: H3Event) {
+  const config = useRuntimeConfig();
+
   let db: Database | undefined;
   const getDb = () => (db ??= useDrizzle(event));
 
-  const config = useRuntimeConfig();
+  let notes: NotesController | undefined;
+  let auth: AuthController | undefined;
+  let email: EmailService | undefined;
 
-  const emailService = () =>
-    new EmailService(event.context.cloudflare?.env?.EMAIL, {
+  const getEmail = () =>
+    (email ??= new EmailService(event.context.cloudflare?.env?.EMAIL, {
       from: { name: config.email.fromName, email: config.email.fromAddress },
       siteUrl: config.public.siteUrl,
-    });
+    }));
 
   return {
     get notesController() {
-      return new NotesController(new NotesService(getDb()));
+      return (notes ??= new NotesController(new NotesService(getDb())));
     },
     get authController() {
-      return new AuthController(new AuthService(getDb()), emailService());
+      return (auth ??= new AuthController(new AuthService(getDb()), getEmail()));
     },
   };
 }

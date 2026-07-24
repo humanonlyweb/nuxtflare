@@ -1,8 +1,8 @@
 # UiRadioGroup
 
-Single-choice radio group (WAI-ARIA [radio](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
-pattern). Auto-imported as `<UiRadioGroup>` from `app/components/ui/radio-group.vue`.
-Generic over `T extends string | number`; two-way binds the selected value with `v-model`.
+Single-choice radio group, following the WAI-ARIA
+[radio](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) pattern. Generic over
+`T extends string | number`.
 
 ## Props
 
@@ -13,23 +13,21 @@ Generic over `T extends string | number`; two-way binds the selected value with 
 | `hint`        | `string`                     | —            | Helper text (hidden while an error shows) |
 | `error`       | `string \| boolean`          | —            | String shows the message                  |
 | `disabled`    | `boolean`                    | `false`      | Disables the whole group                  |
-| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | Exposed as `data-orientation`             |
+| `orientation` | `"vertical" \| "horizontal"` | `"vertical"` | → `data-orientation`                      |
 | `id`          | `string`                     | auto         | Override the generated id                 |
-
-`v-model` binds a `T`. `SelectOption<T>` comes from `~/types/components.type`.
 
 ## Slots
 
-| Slot     | Props                 | Purpose                                                                                                                                         |
-| -------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `option` | `{ option, checked }` | Replaces the whole radio content (default circle + label). Style the `[data-part="radio"][data-radio-checked]` button for card/segmented looks. |
+| Slot     | Props                 | Purpose                                                                                               |
+| -------- | --------------------- | ----------------------------------------------------------------------------------------------------- |
+| `option` | `{ option, checked }` | Replaces the radio content. Style `[data-part="radio"][data-radio-checked]` for card/segmented looks. |
 
 ## Styling hooks
 
 Shared field parts `data-part="field" | "field-label" | "field-message"` plus
 `data-part="radio-group" | "radio" | "radio-control" | "radio-label"`. State:
-`data-orientation`, `data-field-error`, `data-radio-checked` (radio). Native `:disabled`
-and `aria-checked` are present.
+`data-orientation`, `data-field-error`, `data-radio-checked`. Native `:disabled` and
+`aria-checked` are present.
 
 ## Usage
 
@@ -39,6 +37,6 @@ and `aria-checked` are present.
 
 ## Notes
 
-- Roving tabindex: the group is one tab stop; arrows move between radios, selecting as
-  they go (selection follows focus), and wrap at the ends. Home/End jump to first/last.
-- Disabled options are skipped by keyboard navigation.
+- Roving tabindex: the group is one tab stop. Arrows move between radios and select as they
+  go (selection follows focus), wrapping at the ends; Home/End jump to first/last.
+- Disabled options are skipped by the keyboard.

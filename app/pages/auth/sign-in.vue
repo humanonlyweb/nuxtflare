@@ -15,6 +15,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   oauth: "Something went wrong signing you in. Please try again.",
   "oauth-unverified":
     "Your provider email isn't verified yet. Verify it with the provider, then try again.",
+  "rate-limited": "Too many sign-in attempts. Wait a minute and try again.",
 };
 
 const error = computed(() => {

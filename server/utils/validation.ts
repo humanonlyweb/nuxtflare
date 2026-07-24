@@ -1,10 +1,12 @@
 import type { H3Event } from "h3";
 import type { ZodType } from "zod";
 
+import type { FieldErrors } from "#shared/utils/api-error";
+
 function formatZodErrors(
   issues: ReadonlyArray<{ path: PropertyKey[]; message: string }>,
-): Record<string, string> {
-  const errors: Record<string, string> = {};
+): FieldErrors {
+  const errors: FieldErrors = {};
 
   for (const issue of issues) {
     const field = issue.path.length > 0 ? issue.path.join(".") : "_root";
@@ -24,7 +26,7 @@ export async function validateRequestBody<Output>(
   const { data, error } = await readValidatedBody(event, (body) => schema.safeParse(body));
 
   if (error) {
-    throw Errors.validation("Invalid request body", { errors: formatZodErrors(error.issues) });
+    throw Errors.validation("Invalid request body", formatZodErrors(error.issues));
   }
 
   return data;
@@ -39,7 +41,7 @@ export async function validateRouterParams<Output>(
   );
 
   if (error) {
-    throw Errors.validation("Invalid route parameters", { errors: formatZodErrors(error.issues) });
+    throw Errors.validation("Invalid route parameters", formatZodErrors(error.issues));
   }
 
   return data;
@@ -53,9 +55,7 @@ export async function validateRequestQuery<Output>(
   const result = schema.safeParse(query);
 
   if (!result.success) {
-    throw Errors.validation("Invalid query parameters", {
-      errors: formatZodErrors(result.error.issues),
-    });
+    throw Errors.validation("Invalid query parameters", formatZodErrors(result.error.issues));
   }
 
   return result.data;
@@ -85,7 +85,7 @@ function assertDeclaredSizeWithin(event: H3Event, field: string, maxBytes: numbe
 
   if (Number.isFinite(declared) && declared > maxBytes + MULTIPART_OVERHEAD_BYTES) {
     throw Errors.tooLarge("Upload is too large", {
-      errors: { [field]: `Keep the upload under ${formatBytes(maxBytes)}` },
+      [field]: `Keep the upload under ${formatBytes(maxBytes)}`,
     });
   }
 }
@@ -94,13 +94,13 @@ function validatePart(part: MultipartPart, field: string, rules: FileRules): Upl
   const contentType = part.type ?? "";
   if (!rules.allowedTypes.includes(contentType)) {
     throw Errors.validation("Unsupported file type", {
-      errors: { [field]: `Allowed types: ${rules.allowedTypes.join(", ")}` },
+      [field]: `Allowed types: ${rules.allowedTypes.join(", ")}`,
     });
   }
 
   if (part.data.byteLength > rules.maxBytes) {
     throw Errors.validation("File is too large", {
-      errors: { [field]: `Each file must be ${formatBytes(rules.maxBytes)} or smaller` },
+      [field]: `Each file must be ${formatBytes(rules.maxBytes)} or smaller`,
     });
   }
 
@@ -120,7 +120,7 @@ export async function validateFileUpload(event: H3Event, rules: FileRules): Prom
   const part = parts?.find((p) => p.name === field && p.filename && p.data.byteLength);
 
   if (!part) {
-    throw Errors.validation("No file provided", { errors: { [field]: "A file is required" } });
+    throw Errors.validation("No file provided", { [field]: "A file is required" });
   }
 
   return validatePart(part, field, rules);
@@ -138,13 +138,13 @@ export async function validateFileUploads(
 
   if (matched.length === 0) {
     throw Errors.validation("No files provided", {
-      errors: { [field]: "At least one file is required" },
+      [field]: "At least one file is required",
     });
   }
 
   if (matched.length > rules.maxFiles) {
     throw Errors.validation(`Too many files — up to ${rules.maxFiles} allowed`, {
-      errors: { [field]: `Up to ${rules.maxFiles} files at a time` },
+      [field]: `Up to ${rules.maxFiles} files at a time`,
     });
   }
 
@@ -154,7 +154,7 @@ export async function validateFileUploads(
     const total = files.reduce((sum, file) => sum + file.size, 0);
     if (total > rules.maxTotalBytes) {
       throw Errors.validation(`Files exceed the ${formatBytes(rules.maxTotalBytes)} total limit`, {
-        errors: { [field]: `Keep the combined size under ${formatBytes(rules.maxTotalBytes)}` },
+        [field]: `Keep the combined size under ${formatBytes(rules.maxTotalBytes)}`,
       });
     }
   }
