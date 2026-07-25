@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from "vue-router";
 
+type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+
 type BaseIconButtonProps = {
   label: string;
-  variant?: "primary" | "secondary" | "ghost" | "danger" | "link";
+  variant?: ButtonVariant;
   size?: "small" | "medium" | "large";
   loading?: boolean;
   disabled?: boolean;
