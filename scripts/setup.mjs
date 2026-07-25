@@ -4,7 +4,7 @@ import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
 
 const FILES_TO_REMOVE = [
-  "scripts/setup.mjs",
+  "scripts",
   "app/pages/components.vue",
   "server/api/demo",
   "shared/utils/schema-validation/demo.schema.ts",
@@ -143,6 +143,7 @@ if (dropNotes) {
         /^import \{ Notes(Controller|Service) \} from "#server\/features\/notes\/.*\r?\n/gm,
         "",
       )
+      .replace(/^[ \t]*let notes: NotesController \| undefined;\r?\n/m, "")
       .replace(/^([ \t]*)get notesController\(\) \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
   );
   await edit("nuxt.config.ts", (s) =>
@@ -173,7 +174,7 @@ await Promise.all(FILES_TO_REMOVE.map(del));
 
 console.log(`\n✔ Renamed project to "${name}".`);
 console.log(
-  "  Removed: setup script, /components demo page + its API route" +
+  "  Removed: scripts/, /components demo page + its API route" +
     (dropNotes ? ", notes feature" : ""),
 );
 for (const w of warnings) console.log(`  ! ${w}`);

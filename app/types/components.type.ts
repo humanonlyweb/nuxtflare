@@ -25,4 +25,12 @@ export interface TableColumn<T> {
 export type TooltipPlacement = "top" | "bottom";
 
 // Icons
-export type IconName = "arrow-down" | "check" | "chevron-down" | "pencil" | "trash" | "x";
+export type IconName =
+  | "arrow-down"
+  | "check"
+  | "chevron-down"
+  | "github"
+  | "google"
+  | "pencil"
+  | "trash"
+  | "x";
