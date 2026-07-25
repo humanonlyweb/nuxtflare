@@ -1,15 +1,11 @@
 // oxlint-disable typescript/no-unsafe-assignment -- operates on untyped AST nodes
-// Custom oxlint JS plugin (alpha API) that enforces the nuxt-fullstack layering:
-// Routes → Controllers → Services. Rules self-scope by filename, so they're
-// cheap no-ops on unrelated files. See DOCS/ARCHITECTURE.md.
-
-const isController = (f) => f.endsWith(".controller.ts");
 const isService = (f) => f.endsWith(".service.ts");
-const isTask = (f) => f.endsWith(".task.ts");
-const isContainer = (f) => /utils[\\/]container\.ts$/.test(f);
-const isValidationUtil = (f) => /utils[\\/]validation\.ts$/.test(f);
-const isServer = (f) => /(^|[\\/])server[\\/]/.test(f);
+const isController = (f) => f.endsWith(".controller.ts");
+const isTask = (f) => f.endsWith(".task.ts") || /(^|[\\/])server[\\/]tasks[\\/][^\\/]+[\\/].*\.ts$/.test(f);
 const isSchemaModule = (f) => /shared[\\/]utils[\\/]schema-validation[\\/]/.test(f);
+const isValidationUtil = (f) => /utils[\\/]validation\.ts$/.test(f);
+const isContainer = (f) => /utils[\\/]container\.ts$/.test(f);
+const isServer = (f) => /(^|[\\/])server[\\/]/.test(f);
 
 const fileOf = (context) =>
   context.filename ?? context.physicalFilename ?? context.getFilename?.() ?? "";
