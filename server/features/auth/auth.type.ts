@@ -1,3 +1,4 @@
+import type { users } from "#server/database/schema";
 import type { OAUTH_PROVIDERS } from "#server/utils/constant";
 import type { SessionUser } from "#shared/types/auth";
 
@@ -23,3 +24,5 @@ export class UnverifiedOAuthEmailError extends Error {
     this.name = "UnverifiedOAuthEmailError";
   }
 }
+
+export type UserRow = typeof users.$inferSelect;

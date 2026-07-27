@@ -3,10 +3,8 @@ import { and, eq } from "drizzle-orm";
 import { userOauth, users } from "#server/database/schema";
 import type { SessionUser } from "#shared/types/auth";
 
-import type { OAuthIdentity, OAuthSigninResult } from "./auth.type";
+import type { OAuthIdentity, OAuthSigninResult, UserRow } from "./auth.type";
 import { UnverifiedOAuthEmailError } from "./auth.type";
-
-type UserRow = typeof users.$inferSelect;
 
 const toSessionUser = (row: UserRow): SessionUser => ({
   id: row.id,

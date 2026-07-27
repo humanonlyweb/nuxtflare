@@ -119,6 +119,10 @@ lint on the usual violations. Rules self-scope by filename, so they're no-ops el
 - **`arch/zod-schemas-in-shared`** — only `shared/utils/schema-validation/**` imports `zod`
   as a value. A schema defined inline in a page or controller is one the other side can't
   reach, so the two drift. `import type { ZodType }` is fine — that's plumbing.
+- **`arch/domain-types-in-type-file`** — no `interface`/`type` declarations in a
+  `*.service.ts` or `*.controller.ts`. Domain shapes (including
+  `typeof table.$inferSelect` row types) belong in `<feature>.type.ts`, so consumers import
+  the shape without reaching into the implementation module.
 - **`arch/no-process-env`** — `process.env` is inlined at build time on Workers and empty
   for anything per-request. Use `useRuntimeConfig(event)` for config and
   `event.context.cloudflare.env` for bindings.

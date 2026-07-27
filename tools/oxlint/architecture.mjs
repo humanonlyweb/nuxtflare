@@ -1,7 +1,8 @@
 // oxlint-disable typescript/no-unsafe-assignment -- operates on untyped AST nodes
 const isService = (f) => f.endsWith(".service.ts");
 const isController = (f) => f.endsWith(".controller.ts");
-const isTask = (f) => f.endsWith(".task.ts") || /(^|[\\/])server[\\/]tasks[\\/][^\\/]+[\\/].*\.ts$/.test(f);
+const isTask = (f) =>
+  f.endsWith(".task.ts") || /(^|[\\/])server[\\/]tasks[\\/][^\\/]+[\\/].*\.ts$/.test(f);
 const isSchemaModule = (f) => /shared[\\/]utils[\\/]schema-validation[\\/]/.test(f);
 const isValidationUtil = (f) => /utils[\\/]validation\.ts$/.test(f);
 const isContainer = (f) => /utils[\\/]container\.ts$/.test(f);
@@ -253,12 +254,37 @@ const zodSchemasInShared = {
   },
 };
 
+const domainTypesInTypeFile = {
+  create(context) {
+    const file = fileOf(context);
+    if (!isService(file) && !isController(file)) return {};
+
+    const layer = isService(file) ? "service" : "controller";
+
+    const report = (node, name) =>
+      context.report({
+        node,
+        message: `Move '${name}' to <feature>.type.ts and import it — a ${layer} implements behaviour, it does not declare the feature's domain types.`,
+      });
+
+    return {
+      TSInterfaceDeclaration(node) {
+        report(node, node.id?.name ?? "interface");
+      },
+      TSTypeAliasDeclaration(node) {
+        report(node, node.id?.name ?? "type");
+      },
+    };
+  },
+};
+
 export default {
   meta: { name: "arch" },
   rules: {
     "no-service-instantiation-outside-container": noServiceInstantiationOutsideContainer,
     "no-unvalidated-request-reads": noUnvalidatedRequestReads,
     "authorize-before-validate": authorizeBeforeValidate,
+    "domain-types-in-type-file": domainTypesInTypeFile,
     "no-db-access-in-controllers": noDbInControllers,
     "zod-schemas-in-shared": zodSchemasInShared,
     "no-http-in-services": noHttpInServices,

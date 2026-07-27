@@ -27,6 +27,7 @@
     "arch/authorize-before-validate": "error",
     "arch/no-raw-error-throw": "error",
     "arch/zod-schemas-in-shared": "error",
+    "arch/domain-types-in-type-file": "error",
     "arch/no-process-env": "error"
   },
   "overrides": [
