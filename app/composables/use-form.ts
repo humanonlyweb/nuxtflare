@@ -60,7 +60,7 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
   });
 
   const isValid = computed(() => Object.keys(fieldErrors.value).length === 0);
-  const isDirty = computed(() => !dequal(toRaw(form), baseline.value));
+  const isDirty = computed(() => !dequal(klona(form), baseline.value));
   const shouldDisableSubmit = computed(() => processing.value);
 
   function fieldNameOf(event: Event): string | undefined {
