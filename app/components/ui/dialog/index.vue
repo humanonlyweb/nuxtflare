@@ -5,6 +5,7 @@ const {
   title,
   description,
   size = "md",
+  flush = false,
   dismissible = true,
   closeOnBackdrop = true,
   showCloseButton = true,
@@ -12,7 +13,8 @@ const {
   title?: string;
   description?: string;
   dismissible?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
+  flush?: boolean;
   closeOnBackdrop?: boolean;
   showCloseButton?: boolean;
 }>();
@@ -21,6 +23,7 @@ const emit = defineEmits<{ close: [] }>();
 
 const open = defineModel<boolean>("open", { default: false });
 
+const teleportReady = useTeleportReady();
 const dialogRef = useTemplateRef("dialogRef");
 const panelRef = useTemplateRef("panelRef");
 const titleId = useId();
@@ -30,9 +33,6 @@ onClickOutside(panelRef, () => {
   if (closeOnBackdrop && dialogRef.value?.open) close();
 });
 
-// Lazy-mount the body: dialogs render closed on page load, and their slot can
-// be an entire form. Mount it on first open (not v-if="open" — that would
-// unmount mid-close-animation) and keep it after, so reopening is instant.
 const everOpened = ref(open.value);
 
 watch(open, (isOpen) => {
@@ -43,8 +43,12 @@ watch(open, (isOpen) => {
   else if (!isOpen && el.open) el.close();
 });
 
-onMounted(() => {
-  if (open.value) dialogRef.value?.showModal();
+// The <dialog> only enters the DOM once the teleport is allowed to render, which is this same tick
+// — so a dialog that starts open has to wait a beat for its ref before it can be shown.
+onMounted(async () => {
+  if (!open.value) return;
+  await nextTick();
+  dialogRef.value?.showModal();
 });
 
 onBeforeUnmount(() => {
@@ -66,11 +70,12 @@ function onCancel(event: Event) {
 </script>
 
 <template>
-  <teleport to="body">
+  <teleport v-if="teleportReady" to="body">
     <dialog
       ref="dialogRef"
       data-part="dialog"
       :data-dialog-size="size"
+      :data-dialog-flush="flush || undefined"
       :aria-labelledby="title ? titleId : undefined"
       :aria-describedby="description ? descId : undefined"
       @close="onClose"

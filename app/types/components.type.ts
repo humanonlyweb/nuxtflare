@@ -1,5 +1,11 @@
 import type { TdHTMLAttributes } from "vue";
 
+// Button
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+export type ButtonSize = "small" | "medium" | "large";
+export type ButtonType = "button" | "submit" | "reset";
+export type LinkTarget = "_blank" | "_self" | "_parent" | "_top";
+
 // Select
 export type SelectValue = string | number;
 
