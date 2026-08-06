@@ -1,0 +1,371 @@
+/* Checkbox, radio group and switch. */
+
+[data-part="checkbox"],
+[data-part="radio"],
+[data-part="switch"] {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-ink);
+  text-align: start;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* --- checkbox --------------------------------------------- */
+[data-part="checkbox-input"] {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+[data-part="checkbox-control"] {
+  position: relative;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-faint);
+  border-radius: var(--radius-xs);
+  background: var(--color-surface);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+[data-part="checkbox-input"]:checked + [data-part="checkbox-control"],
+[data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+[data-part="checkbox-input"]:checked + [data-part="checkbox-control"]:empty::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 8px;
+  height: 5px;
+  margin: auto;
+  border: 1.6px solid var(--color-surface);
+  border-block-start: 0;
+  border-inline-end: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+[data-part="checkbox-input"]:indeterminate + [data-part="checkbox-control"]:empty::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 8px;
+  height: 1.6px;
+  margin: auto;
+  background: var(--color-surface);
+}
+
+[data-part="checkbox-input"]:focus-visible + [data-part="checkbox-control"] {
+  box-shadow: var(--focus-ring);
+}
+
+[data-part="checkbox"][data-checkbox-disabled] {
+  color: var(--color-dim);
+  cursor: not-allowed;
+
+  & [data-part="checkbox-control"] {
+    border-color: var(--color-hairline);
+    background: var(--color-subtle);
+  }
+}
+
+/* --- radio ------------------------------------------------ */
+[data-part="radio-group"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+[data-part="radio-group"][data-orientation="horizontal"] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-7);
+}
+
+[data-part="radio-control"] {
+  position: relative;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--color-faint);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+[data-part="radio"][data-radio-checked] [data-part="radio-control"] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 5px;
+    height: 5px;
+    margin: auto;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+  }
+}
+
+[data-part="radio"]:focus-visible:has([data-part="radio-control"]) {
+  box-shadow: none;
+
+  & [data-part="radio-control"] {
+    box-shadow: var(--focus-ring);
+  }
+}
+
+[data-part="radio"]:disabled {
+  color: var(--color-dim);
+  cursor: not-allowed;
+
+  & [data-part="radio-control"] {
+    border-color: var(--color-hairline);
+    background: var(--color-subtle);
+  }
+}
+
+/* --- segmented control ------------------------------------ */
+[data-part="segmented"] {
+  --segmented-pad: 3px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: var(--segmented-pad);
+  border-radius: var(--radius-md);
+  background: var(--color-subtle);
+}
+
+[data-part="segmented-indicator"] {
+  position: absolute;
+  left: 0;
+  inset-block: var(--segmented-pad);
+  /* Concentric with the track: outer radius less the track's own padding. */
+  border-radius: calc(var(--radius-md) - var(--segmented-pad));
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+  pointer-events: none;
+}
+
+[data-part="segmented"][data-segmented-animate] [data-part="segmented-indicator"] {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    width var(--dur-slow) var(--ease-out);
+}
+
+[data-part="segment"] {
+  /* Positioned so the labels paint above the indicator that precedes them. */
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  height: 26px;
+  padding-inline: var(--space-5);
+  border: 0;
+  /* Concentric with the track: outer radius less the track's own padding. */
+  border-radius: calc(var(--radius-md) - 3px);
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-weight: 500;
+  color: var(--color-muted);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+[data-part="segment"][data-segment-checked] {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  box-shadow: var(--shadow-1);
+}
+
+[data-part="segmented"][data-segmented-sliding] [data-part="segment"][data-segment-checked] {
+  background: none;
+  box-shadow: none;
+}
+
+[data-part="segmented"][data-segmented-size="small"] [data-part="segment"] {
+  height: 22px;
+  padding-inline: var(--space-4);
+}
+
+[data-part="segmented"][data-segmented-icon-only] [data-part="segment"] {
+  --icon-size: 14px;
+
+  width: 34px;
+  padding-inline: 0;
+}
+
+[data-part="segment"]:disabled {
+  color: var(--color-faint);
+  cursor: not-allowed;
+}
+
+/* --- tabs ------------------------------------------------- */
+[data-part="tablist"] {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-7);
+  height: var(--control-lg);
+  border-block-end: 1px solid var(--color-hairline);
+}
+
+/* Sits in the tab's own border-bottom band, just above the tablist hairline. */
+[data-part="tab-indicator"] {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--color-ink);
+  pointer-events: none;
+}
+
+[data-part="tablist"][data-tabs-animate] [data-part="tab-indicator"] {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    width var(--dur-slow) var(--ease-out);
+}
+
+[data-part="tab"] {
+  display: inline-flex;
+  align-items: center;
+  height: calc(var(--control-lg) - 1px);
+  padding: 0 0 11px;
+  border: 0;
+  border-block-end: 1.5px solid transparent;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-weight: 500;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+[data-part="tab"][data-tab-selected] {
+  border-block-end-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+[data-part="tablist"][data-tabs-sliding] [data-part="tab"][data-tab-selected] {
+  border-block-end-color: transparent;
+}
+
+[data-part="tab"]:disabled {
+  color: var(--color-faint);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-part="tab"]:not(:disabled, [data-tab-selected]):hover {
+    color: var(--color-ink);
+  }
+}
+
+[data-part="tabpanel"] {
+  padding-block-start: var(--space-6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-part="segmented"][data-segmented-animate] [data-part="segmented-indicator"],
+  [data-part="tablist"][data-tabs-animate] [data-part="tab-indicator"] {
+    transition: none;
+  }
+}
+
+/* --- switch ----------------------------------------------- */
+[data-part="switch"] {
+  --switch-track-width: 36px;
+  --switch-track-height: 20px;
+  --switch-thumb: 16px;
+}
+
+[data-part="switch"][data-switch-size="small"] {
+  --switch-track-width: 30px;
+  --switch-track-height: 18px;
+  --switch-thumb: 14px;
+}
+
+[data-part="switch"] > [data-part="track"] {
+  position: relative;
+  flex: none;
+  width: var(--switch-track-width);
+  height: var(--switch-track-height);
+  border-radius: var(--radius-pill);
+  background: var(--color-hairline);
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+
+[data-part="switch"] [data-part="thumb"] {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  width: var(--switch-thumb);
+  height: var(--switch-thumb);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+
+[data-part="switch"][data-switch-checked] {
+  & > [data-part="track"] {
+    background: var(--color-accent);
+  }
+
+  & [data-part="thumb"] {
+    transform: translateX(calc(var(--switch-track-width) - var(--switch-thumb) - 4px));
+  }
+}
+
+[data-part="switch"]:focus-visible {
+  box-shadow: none;
+
+  & > [data-part="track"] {
+    box-shadow: var(--focus-ring);
+  }
+}
+
+[data-part="switch"]:disabled {
+  color: var(--color-dim);
+  cursor: not-allowed;
+
+  & > [data-part="track"] {
+    background: var(--color-subtle);
+  }
+
+  & [data-part="thumb"] {
+    box-shadow: none;
+  }
+}

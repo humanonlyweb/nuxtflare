@@ -1,0 +1,155 @@
+/* Table and accordion. */
+
+/* --- table ------------------------------------------------ */
+[data-part="table-scroll"] {
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+[data-part="table"] {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+}
+
+[data-part="caption"] {
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-block-end: 1px solid var(--color-hairline);
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  text-align: start;
+}
+
+[data-part="cell"] {
+  padding: var(--space-4) var(--space-5);
+  border-block-end: 1px solid var(--color-hairline);
+  text-align: start;
+  vertical-align: middle;
+}
+
+th[data-part="cell"] {
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+[data-part="cell"][data-table-align="center"] {
+  text-align: center;
+}
+
+[data-part="cell"][data-table-align="right"] {
+  text-align: end;
+}
+
+[data-part="cell"][data-table-numeric] {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Opaque on purpose: the header also has to stay readable when it's sticky and
+   rows scroll underneath it. */
+[data-part="table-header"] [data-part="cell"],
+[data-part="table-footer"] [data-part="cell"] {
+  background: var(--color-subtle);
+}
+
+tbody > [data-part="row"]:last-child [data-part="cell"] {
+  border-block-end: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-part="row"][data-table-interactive]:hover {
+    background: var(--color-subtle);
+  }
+}
+
+[data-part="table-footer"] [data-part="cell"] {
+  border-block-end: 0;
+  border-block-start: 1px solid var(--color-hairline);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+[data-part="empty"] {
+  padding: var(--space-9) var(--space-5);
+  color: var(--color-muted);
+  text-align: center;
+}
+
+[data-part="table-scroll"]:focus-visible {
+  border-radius: var(--radius-md);
+}
+
+/* --- accordion -------------------------------------------- */
+[data-part="accordion"] {
+  border-block-start: 1px solid var(--color-hairline);
+}
+
+[data-part="accordion-item"] {
+  border-block-end: 1px solid var(--color-hairline);
+}
+
+[data-part="accordion-heading"] {
+  font: inherit;
+}
+
+[data-part="accordion-trigger"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  padding-block: var(--space-5);
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  text-align: start;
+  cursor: pointer;
+}
+
+[data-part="accordion-trigger"]:disabled {
+  color: var(--color-dim);
+  cursor: not-allowed;
+}
+
+[data-part="accordion-trigger"][aria-disabled="true"] {
+  cursor: default;
+}
+
+[data-part="accordion-indicator"] {
+  --icon-size: 12px;
+
+  display: inline-flex;
+  flex: none;
+  color: var(--color-muted);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+[data-part="accordion-trigger"][data-accordion-open] [data-part="accordion-indicator"] {
+  transform: rotate(180deg);
+}
+
+[data-part="accordion-content"] {
+  padding-block-end: var(--space-5);
+  font-size: var(--text-xs);
+  line-height: 18px;
+  color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-part="accordion-indicator"] {
+    transition: none;
+  }
+}

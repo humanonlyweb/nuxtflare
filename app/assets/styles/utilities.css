@@ -1,0 +1,89 @@
+/* Content-level primitives from the design system that have no component of
+   their own. */
+
+.label {
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.label--ink {
+  color: var(--color-ink);
+}
+
+.hint {
+  font-size: var(--text-label);
+  line-height: 16px;
+  color: var(--color-muted);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  color: var(--color-muted);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 22px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-subtle);
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-muted);
+}
+
+.badge__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--color-faint);
+}
+
+.badge--draft {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+
+  & .badge__dot {
+    background: var(--color-warning);
+  }
+}
+
+.badge--live .badge__dot {
+  background: var(--color-accent);
+}
+
+.badge--sent {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+
+  & .badge__dot {
+    background: var(--color-success);
+  }
+}
+
+.badge--failed {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+
+  & .badge__dot {
+    background: var(--color-danger);
+  }
+}
+
+.chip-var {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  font-weight: 500;
+  color: var(--color-accent);
+}
