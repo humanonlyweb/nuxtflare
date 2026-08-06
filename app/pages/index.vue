@@ -601,8 +601,7 @@ const badgeClass = {
           <div :class="$style.specimen">
             <div class="panel" :class="$style.panelDemo">
               <div class="panel__section">
-                <span class="label">Typography</span>
-                <UiSelect v-model="font" :options="fonts" />
+                <UiSelect label="Typography" v-model="font" :options="fonts" />
                 <div :class="$style.pair">
                   <UiSpinButton v-model="leading" label="Size" :min="8" :max="96" />
                   <UiSpinButton v-model="leading" label="Leading" :min="8" :max="120" />

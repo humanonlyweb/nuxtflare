@@ -19,7 +19,7 @@ const label = computed(() => caps.value.map((cap) => cap.label).join(" "));
 </script>
 
 <template>
-  <kbd data-part="kbd" :data-kbd-size="size" :aria-label="keys ? label : undefined">
+  <kbd data-part="kbd" :data-kbd-size="size">
     <template v-if="caps.length">
       <kbd v-for="(cap, i) in caps" :key="`${cap.glyph}-${i}`" data-part="key" aria-hidden="true">
         {{ cap.glyph }}
