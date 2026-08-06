@@ -20,7 +20,8 @@
   -webkit-user-select: none;
 }
 
-/* --- checkbox --------------------------------------------- */
+/* The native input stays in the DOM for keyboard and AT, and forwards its focus
+   ring to the drawn control. */
 [data-part="checkbox-input"] {
   position: absolute;
   width: 0;
@@ -84,7 +85,6 @@
   }
 }
 
-/* --- radio ------------------------------------------------ */
 [data-part="radio-group"] {
   display: flex;
   flex-direction: column;
@@ -126,6 +126,8 @@
   }
 }
 
+/* Move the ring onto the mark, but only when the mark is actually rendered —
+   the option slot can replace it, and the row must stay focus-visible then. */
 [data-part="radio"]:focus-visible:has([data-part="radio-control"]) {
   box-shadow: none;
 
@@ -144,7 +146,6 @@
   }
 }
 
-/* --- segmented control ------------------------------------ */
 [data-part="segmented"] {
   --segmented-pad: 3px;
 
@@ -184,7 +185,6 @@
   height: 26px;
   padding-inline: var(--space-5);
   border: 0;
-  /* Concentric with the track: outer radius less the track's own padding. */
   border-radius: calc(var(--radius-md) - 3px);
   background: none;
   font-family: inherit;
@@ -207,6 +207,7 @@
   box-shadow: var(--shadow-1);
 }
 
+/* Once the sliding indicator is in play it owns the fill. */
 [data-part="segmented"][data-segmented-sliding] [data-part="segment"][data-segment-checked] {
   background: none;
   box-shadow: none;
@@ -229,7 +230,6 @@
   cursor: not-allowed;
 }
 
-/* --- tabs ------------------------------------------------- */
 [data-part="tablist"] {
   position: relative;
   display: flex;
@@ -266,6 +266,9 @@
   font-family: inherit;
   font-size: var(--text-xs);
   line-height: var(--leading-xs);
+  /* Deliberately constant across states: the reference bolds the selected tab,
+     but a weight change reflows the row every time selection moves. Colour and
+     the underline carry the emphasis instead. */
   font-weight: 500;
   color: var(--color-muted);
   cursor: pointer;
@@ -298,6 +301,8 @@
   padding-block-start: var(--space-6);
 }
 
+/* The marker still moves — it has to, it marks the selection — it just gets
+   there without the travel. */
 @media (prefers-reduced-motion: reduce) {
   [data-part="segmented"][data-segmented-animate] [data-part="segmented-indicator"],
   [data-part="tablist"][data-tabs-animate] [data-part="tab-indicator"] {
@@ -305,7 +310,6 @@
   }
 }
 
-/* --- switch ----------------------------------------------- */
 [data-part="switch"] {
   --switch-track-width: 36px;
   --switch-track-height: 20px;

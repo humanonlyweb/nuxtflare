@@ -1,6 +1,5 @@
 /* Select, menu, tooltip, dialog and toast — everything that floats. */
 
-/* --- select trigger --------------------------------------- */
 [data-part="select-control"] [data-part="trigger"] {
   --icon-size: 10px;
 
@@ -66,7 +65,6 @@
   }
 }
 
-/* --- floating panels -------------------------------------- */
 [data-part="listbox"],
 [data-part="menu-list"] {
   display: flex;
@@ -105,6 +103,10 @@
   background: var(--color-subtle);
 }
 
+[data-part="menu-item"] > [data-part="kbd"] {
+  margin-inline-start: auto;
+}
+
 [data-part="option"][aria-selected="true"] {
   font-weight: 500;
 }
@@ -124,7 +126,6 @@
   background: none;
 }
 
-/* --- popover ---------------------------------------------- */
 [data-part="popover"] {
   min-width: 300px;
   border: 1px solid var(--color-hairline);
@@ -147,6 +148,16 @@
   font-weight: 600;
 }
 
+[data-part="popover-header"] > [data-part="button"][data-button-icon-only] {
+  margin-inline-end: calc((var(--icon-size) - var(--button-box)) / 2);
+}
+
+[data-part="popover-search"] {
+  flex: none;
+  padding: var(--space-2);
+  border-block-end: 1px solid var(--color-hairline);
+}
+
 [data-part="popover-body"] {
   padding: var(--space-2);
   overflow-y: auto;
@@ -164,7 +175,6 @@
   border-block-start: 1px solid var(--color-hairline);
 }
 
-/* --- menu trigger ----------------------------------------- */
 [data-part="menu-trigger"] {
   display: inline-flex;
   align-items: center;
@@ -202,7 +212,6 @@
   cursor: not-allowed;
 }
 
-/* --- tooltip ---------------------------------------------- */
 [data-part="tooltip"] {
   --ui-tooltip-arrow: var(--color-ink);
 
@@ -216,7 +225,6 @@
   box-shadow: var(--shadow-2);
 }
 
-/* --- dialog ----------------------------------------------- */
 [data-part="dialog"] {
   --dialog-width: 460px;
 
@@ -272,13 +280,15 @@
 
   & [data-part="close"] {
     --icon-size: 12px;
+    --button-box: 26px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: none;
-    width: 26px;
-    height: 26px;
+    width: var(--button-box);
+    height: var(--button-box);
+    margin-inline-end: calc((var(--icon-size) - var(--button-box)) / 2);
     border: 0;
     border-radius: var(--radius-sm);
     background: none;
@@ -318,7 +328,6 @@
   padding: 0;
 }
 
-/* --- toast ------------------------------------------------ */
 [data-part="toast"] {
   display: flex;
   align-items: center;

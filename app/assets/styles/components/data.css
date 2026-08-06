@@ -1,6 +1,8 @@
 /* Table and accordion. */
 
-/* --- table ------------------------------------------------ */
+/* Bordered rather than elevated: a table sits in the page, and shadow is
+   reserved for surfaces that float above it. The scroll container is also the
+   frame, so overflow clips the rows to the rounded corners for free. */
 [data-part="table-scroll"] {
   border: 1px solid var(--color-hairline);
   border-radius: var(--radius-md);
@@ -88,7 +90,6 @@ tbody > [data-part="row"]:last-child [data-part="cell"] {
   border-radius: var(--radius-md);
 }
 
-/* --- accordion -------------------------------------------- */
 [data-part="accordion"] {
   border-block-start: 1px solid var(--color-hairline);
 }

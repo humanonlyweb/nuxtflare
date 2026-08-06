@@ -1,3 +1,6 @@
+/* Button, icon-button and the two halves of split-button all render
+   [data-part="button"], so they share one chrome definition. */
+
 [data-part="button"] {
   --button-pad: 14px;
   --button-pad-icon: 10px;
@@ -8,6 +11,8 @@
   justify-content: center;
   gap: 7px;
   height: var(--control-md);
+  /* Optical alignment: an icon carries more internal whitespace than a glyph
+     edge, so matching the text padding reads as too much on the icon side. */
   padding-inline: var(--button-pad-start, var(--button-pad))
     var(--button-pad-end, var(--button-pad));
   border: 1px solid transparent;
@@ -37,11 +42,12 @@
   --button-pad-end: var(--button-pad-icon);
 }
 
+/* An icon-only button labels itself with aria-label, leaving an empty span that
+   would still open a gap. */
 [data-part="button-label"]:empty {
   display: none;
 }
 
-/* --- size ------------------------------------------------- */
 [data-part="button"][data-button-size="small"] {
   --button-pad: 12px;
   --button-pad-icon: 8px;
@@ -66,20 +72,23 @@
   width: 100%;
 }
 
+/* --button-box is published so a container can read the gap between the glyph
+   and the hit area, and pull a trailing icon button back by exactly that. */
 [data-part="button"][data-button-icon-only] {
   --button-pad: 0px;
   --button-pad-icon: 0px;
   --icon-size: 16px;
+  --button-box: var(--control-md);
 
-  width: var(--control-md);
+  width: var(--button-box);
 }
 
 [data-part="button"][data-button-icon-only][data-button-size="small"] {
-  width: var(--control-sm);
+  --button-box: var(--control-sm);
 }
 
 [data-part="button"][data-button-icon-only][data-button-size="large"] {
-  width: var(--control-lg);
+  --button-box: var(--control-lg);
 }
 
 [data-part="button"][data-button-shape="round"] {
@@ -88,17 +97,24 @@
 
 [data-part="button"][data-button-shape="round"][data-button-icon-only][data-button-size="medium"] {
   --icon-size: 16px;
+  --button-box: var(--control-round);
 
-  width: var(--control-round);
-  height: var(--control-round);
+  height: var(--button-box);
 }
 
+/* Toolbar toggles: pressed is a state of the control, not a variant of it. */
 [data-part="button"][aria-pressed="true"] {
   background-color: var(--color-accent-soft);
   color: var(--color-accent);
 }
 
-/* --- variant ---------------------------------------------- */
+/* An icon button holding a panel open inverts, so it stays legible as the anchor
+   once the panel covers the surface around it. */
+[data-part="button"][data-button-icon-only][aria-expanded="true"] {
+  background-color: var(--color-ink);
+  color: var(--color-surface);
+}
+
 [data-button-variant="primary"] {
   background-color: var(--color-accent);
   color: var(--color-surface);
@@ -162,6 +178,8 @@
   }
 }
 
+/* Loading is excluded: a button in flight keeps its variant fill, because
+   dropping to the disabled grey makes a pending action look like a refused one. */
 [data-part="button"][data-button-disabled]:not([data-button-loading]) {
   background-color: var(--color-subtle);
   border-color: transparent;
@@ -178,7 +196,7 @@
   background: none;
 }
 
-/* --- loading ---------------------------------------------- */
+/* Drawn only when the consumer passes no spinner of their own. */
 [data-part="button-spinner"]:empty {
   width: 14px;
   height: 14px;
@@ -196,19 +214,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* The blanket reduced-motion reset would freeze the spinner mid-turn, leaving
+     a static arc that reads as a broken glyph rather than progress. */
   [data-part="button-spinner"]:empty {
     animation-duration: 1400ms !important;
     animation-iteration-count: infinite !important;
   }
 }
 
-/* --- split button ----------------------------------------- */
 [data-split-part="toggle"] {
   --button-pad: 7px;
   --button-pad-icon: 7px;
   --icon-size: 10px;
 }
 
+/* Painted as an overlay image rather than a background-color, so the variant's
+   own fill still shows through. Setting a translucent background-color here
+   would replace the accent instead of darkening it, leaving the open half pale
+   grey against its solid other half. */
 [data-part="split-button"][data-split] [data-split-part="toggle"][aria-expanded="true"] {
   background-image: linear-gradient(color-mix(in oklch, var(--color-ink) 14%, transparent) 0 0);
 }

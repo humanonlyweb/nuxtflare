@@ -1,3 +1,5 @@
+/* Sized off the control scale so an avatar lines up with the button or field
+   beside it — md matches --control-md, lg matches --control-lg. */
 [data-part="avatar"] {
   --avatar-size: var(--control-md);
   --avatar-text: var(--text-label);
@@ -10,6 +12,8 @@
   flex: none;
   width: var(--avatar-size);
   height: var(--avatar-size);
+  /* Ring in the surface colour, not a gap: it's what separates stacked avatars
+     without leaving a hole when they sit on a tinted background. */
   border: var(--avatar-ring) solid var(--color-surface);
   border-radius: var(--radius-pill);
   background: var(--color-subtle);

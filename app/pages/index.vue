@@ -61,9 +61,20 @@ const compact = ref(true);
 
 const leading = ref(40);
 
-// Built here rather than in the template: `{{` inside an interpolation would be
-// re-read as a second mustache and fail to parse.
-const variables = ["first_name", "order_id", "store_url"].map((name) => `{{${name}}}`);
+// Braces are safe in script; in the template `{{` would be read as a mustache.
+const variableRows = [
+  { token: "{{first_name}}", value: "Ava" },
+  { token: "{{last_name}}", value: "Rios" },
+  { token: "{{order_id}}", value: "#48219" },
+  { token: "{{store_url}}", value: "northbound.co" },
+  { token: "{{unsubscribe_url}}", value: "Auto" },
+];
+
+const variableQuery = ref("");
+const filteredVariables = computed(() => {
+  const query = variableQuery.value.trim().toLowerCase();
+  return query ? variableRows.filter((row) => row.token.includes(query)) : variableRows;
+});
 
 const menuItems: SelectOption<string>[] = [
   { label: "Duplicate", value: "duplicate" },
@@ -74,13 +85,13 @@ const menuItems: SelectOption<string>[] = [
 const sectionOpen = ref<string | undefined>("typography");
 const dialogOpen = ref(false);
 const confirmOpen = ref(false);
-const popoverOpen = ref(false);
+const variablesOpen = ref(false);
 const sendMenuOpen = ref(false);
 
 const sendOptions = [
-  { icon: "mail", label: "Send to me" },
-  { icon: "clock", label: "Schedule for later" },
-  { icon: "eye", label: "Preview in inbox" },
+  { icon: "mail", label: "Send to me", keys: "mod+enter" },
+  { icon: "clock", label: "Schedule for later", keys: "mod+shift+s" },
+  { icon: "eye", label: "Preview in inbox", keys: "mod+p" },
 ] as const;
 
 interface Campaign {
@@ -208,6 +219,7 @@ const badgeClass = {
                 >
                   <UiIcon :name="option.icon" />
                   {{ option.label }}
+                  <UiKbd :keys="option.keys" size="small" />
                 </button>
               </div>
             </template>
@@ -352,25 +364,6 @@ const badgeClass = {
             @select="(value) => toast.success(`Menu: ${value}`)"
           />
 
-          <UiPopover v-model:open="popoverOpen" label="Variables">
-            <template #trigger="{ attrs }">
-              <UiButton v-bind="attrs" variant="secondary" @click="popoverOpen = !popoverOpen">
-                <template #leading><UiIcon name="braces" /></template>
-                Variables
-              </UiButton>
-            </template>
-
-            <div data-part="popover-header"><span>Variables</span></div>
-            <div data-part="popover-body">
-              <button v-for="v in variables" :key="v" data-part="menu-item" type="button">
-                <span class="chip-var">{{ v }}</span>
-              </button>
-            </div>
-            <div data-part="popover-footer">
-              <span class="hint">Click a variable to insert at cursor</span>
-            </div>
-          </UiPopover>
-
           <UiButton variant="secondary" @click="dialogOpen = true">Open dialog</UiButton>
           <UiButton variant="danger" @click="confirmOpen = true">Delete block</UiButton>
           <UiButton variant="ghost" @click="toast.success('Draft saved.')">Success toast</UiButton>
@@ -431,7 +424,9 @@ const badgeClass = {
         <span class="hint">
           Amber is the only colour outside the neutral/accent pair, and it only ever means “not sent
           yet”. Avatars stack with a surface-coloured ring; past the cap the rest collapse into one
-          counted chip.
+          counted chip. Key caps take a chord like “mod+shift+p”: macOS draws the modifiers, every
+          other platform spells them out. Detected server-side so the glyph never flips after
+          hydration.
         </span>
       </div>
       <div :class="$style.body">
@@ -440,7 +435,22 @@ const badgeClass = {
           <span class="badge badge--live"><span class="badge__dot" />Scheduled</span>
           <span class="badge badge--sent"><span class="badge__dot" />Sent</span>
           <span class="badge badge--failed"><span class="badge__dot" />Bounced</span>
-          <span class="chip-var">{{ variables[0] }}</span>
+          <span class="chip-var">{{ variableRows[0]?.token }}</span>
+
+          <UiKbd keys="mod+k" />
+          <UiKbd keys="esc" />
+          <UiKbd>Fn</UiKbd>
+
+          <span :class="$style.platformPair">
+            <span class="mono">apple</span>
+            <UiKbd keys="mod+shift+p" platform="apple" />
+            <UiKbd keys="mod+alt+backspace" platform="apple" />
+          </span>
+          <span :class="$style.platformPair">
+            <span class="mono">pc</span>
+            <UiKbd keys="mod+shift+p" platform="pc" />
+            <UiKbd keys="mod+alt+backspace" platform="pc" />
+          </span>
         </div>
 
         <div :class="$style.row">
@@ -485,11 +495,64 @@ const badgeClass = {
                   <UiIcon name="layout-grid" />
                 </UiIconButton>
               </UiTooltip>
-              <UiTooltip text="Variables">
-                <UiIconButton label="Variables" shape="round">
-                  <UiIcon name="braces" />
-                </UiIconButton>
-              </UiTooltip>
+              <UiPopover v-model:open="variablesOpen" label="Variables" align="end">
+                <template #trigger="{ attrs }">
+                  <UiTooltip text="Variables">
+                    <UiIconButton
+                      v-bind="attrs"
+                      label="Variables"
+                      shape="round"
+                      @click="variablesOpen = !variablesOpen"
+                    >
+                      <UiIcon name="braces" />
+                    </UiIconButton>
+                  </UiTooltip>
+                </template>
+
+                <template #default="{ close }">
+                  <div data-part="popover-header">
+                    <span>Variables</span>
+                    <UiIconButton label="Close" size="small" @click="close()">
+                      <UiIcon name="x" />
+                    </UiIconButton>
+                  </div>
+
+                  <div data-part="popover-search">
+                    <UiInput
+                      v-model="variableQuery"
+                      type="search"
+                      size="small"
+                      aria-label="Search variables"
+                      placeholder="Search variables"
+                    >
+                      <template #prefix><UiIcon name="search" /></template>
+                    </UiInput>
+                  </div>
+
+                  <div data-part="popover-body">
+                    <button
+                      v-for="(row, i) in filteredVariables"
+                      :key="row.token"
+                      type="button"
+                      class="list-row"
+                      :aria-current="i === 0 || undefined"
+                      @click="(close(), toast.success(`Inserted ${row.token}`))"
+                    >
+                      <span class="chip-var">{{ row.token }}</span>
+                      <span class="list-row__value">{{ row.value }}</span>
+                    </button>
+
+                    <p v-if="!filteredVariables.length" class="hint" :class="$style.noVariables">
+                      No variables match “{{ variableQuery }}”.
+                    </p>
+                  </div>
+
+                  <div data-part="popover-footer">
+                    <span class="hint">Click a variable to insert at cursor</span>
+                    <UiButton variant="link">Manage</UiButton>
+                  </div>
+                </template>
+              </UiPopover>
             </div>
             <span class="mono">.toolbar</span>
           </div>
@@ -524,14 +587,14 @@ const badgeClass = {
           <div :class="$style.specimen">
             <div class="card" :class="$style.rowsDemo">
               <button
-                v-for="(v, i) in variables"
-                :key="v"
+                v-for="(row, i) in variableRows.slice(0, 3)"
+                :key="row.token"
                 type="button"
                 class="list-row"
                 :aria-current="i === 0 || undefined"
               >
-                <span class="chip-var">{{ v }}</span>
-                <span class="list-row__value">{{ ["Ava", "#48219", "northbound.co"][i] }}</span>
+                <span class="chip-var">{{ row.token }}</span>
+                <span class="list-row__value">{{ row.value }}</span>
               </button>
             </div>
             <span class="mono">.list-row</span>
@@ -638,6 +701,16 @@ const badgeClass = {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-7);
   align-items: start;
+}
+
+.noVariables {
+  padding: var(--space-4) var(--space-3);
+}
+
+.platformPair {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
 }
 
 .searchForm {
