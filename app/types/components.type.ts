@@ -16,6 +16,19 @@ export interface AvatarItem {
   id?: string | number;
 }
 
+// Command palette
+export interface CommandItem<T extends SelectValue = SelectValue> {
+  value: T;
+  label: string;
+  /** Consecutive items sharing a group render under one heading. */
+  group?: string;
+  icon?: IconName;
+  /** Chord for the trailing key caps, e.g. "mod+shift+s". */
+  keys?: string;
+  hint?: string;
+  disabled?: boolean;
+}
+
 // Select
 export type SelectValue = string | number;
 
