@@ -3,7 +3,7 @@ import type { RouteLocationRaw } from "vue-router";
 
 import { NuxtLink } from "#components";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+type ButtonVariant = "primary" | "secondary" | "solid" | "ghost" | "danger" | "link";
 
 type BaseButtonProps = {
   variant?: ButtonVariant;
@@ -76,7 +76,7 @@ const buttonProps = computed(() => {
     <span v-if="loading" data-part="button-spinner" aria-hidden="true">
       <slot name="spinner" />
     </span>
-    <span v-if="$slots.default" data-part="button-label"><slot /></span>
+    <span data-part="button-label"><slot /></span>
     <slot name="trailing" />
   </component>
 </template>

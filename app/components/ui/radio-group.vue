@@ -30,67 +30,14 @@ const { id, hintId, errorId, isError, errorMessage, describedBy } = useField({
 });
 const labelId = computed(() => `${id.value}-label`);
 
-const radios = useTemplateRef<HTMLButtonElement[]>("radios");
+const radios = useTemplateRef("radios");
 
-// Roving tabindex: the checked radio is the single tab stop; with nothing
-// checked, the first enabled radio takes it so the group is still reachable.
-const firstEnabled = computed(() => options.findIndex((o) => !o.disabled));
-function isTabStop(opt: SelectOption<T>, index: number) {
-  if (model.value != null) return opt.value === model.value;
-  return index === firstEnabled.value;
-}
-
-function select(opt: SelectOption<T>) {
-  if (disabled || opt.disabled) return;
-  model.value = opt.value;
-}
-
-// Selection follows focus (APG): arrows move to the next enabled radio, select
-// it, and move focus there — wrapping at both ends.
-function move(dir: 1 | -1) {
-  const enabled = options.map((o, i) => i).filter((i) => !options[i]!.disabled);
-  if (!enabled.length) return;
-  const current = model.value != null ? options.findIndex((o) => o.value === model.value) : -1;
-  const pos = enabled.indexOf(current);
-  const next =
-    enabled[
-      pos < 0 ? (dir === 1 ? 0 : enabled.length - 1) : (pos + dir + enabled.length) % enabled.length
-    ]!;
-  model.value = options[next]!.value;
-  radios.value?.[next]?.focus();
-}
-
-function focusEdge(edge: "first" | "last") {
-  const enabled = options.map((o, i) => i).filter((i) => !options[i]!.disabled);
-  const idx = edge === "first" ? enabled[0] : enabled[enabled.length - 1];
-  if (idx == null) return;
-  model.value = options[idx]!.value;
-  radios.value?.[idx]?.focus();
-}
-
-function onKeydown(e: KeyboardEvent) {
-  if (disabled) return;
-  switch (e.key) {
-    case "ArrowDown":
-    case "ArrowRight":
-      e.preventDefault();
-      move(1);
-      break;
-    case "ArrowUp":
-    case "ArrowLeft":
-      e.preventDefault();
-      move(-1);
-      break;
-    case "Home":
-      e.preventDefault();
-      focusEdge("first");
-      break;
-    case "End":
-      e.preventDefault();
-      focusEdge("last");
-      break;
-  }
-}
+const { isTabStop, select, onKeydown } = useRovingSelection({
+  items: () => options,
+  elements: () => radios.value ?? undefined,
+  disabled: () => disabled,
+  model,
+});
 </script>
 
 <template>

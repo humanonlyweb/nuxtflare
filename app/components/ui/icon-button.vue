@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from "vue-router";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
+import type {
+  ButtonShape,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+  LinkTarget,
+} from "~/types/components.type";
 
 type BaseIconButtonProps = {
   label: string;
   variant?: ButtonVariant;
-  size?: "small" | "medium" | "large";
+  size?: ButtonSize;
+  shape?: ButtonShape;
   loading?: boolean;
   disabled?: boolean;
 };
 
-const { label, variant, loading, ...rest } = defineProps<
+const { label, variant, loading, shape, ...rest } = defineProps<
   | (BaseIconButtonProps & {
-      type?: "button" | "submit" | "reset";
+      type?: ButtonType;
       href?: never;
       to?: never;
     })
@@ -24,7 +31,7 @@ const { label, variant, loading, ...rest } = defineProps<
     })
   | (BaseIconButtonProps & {
       href: string;
-      target?: "_blank" | "_self" | "_parent" | "_top";
+      target?: LinkTarget;
       to?: never;
       type?: never;
     })
@@ -37,6 +44,7 @@ const { label, variant, loading, ...rest } = defineProps<
     :variant="variant ?? 'ghost'"
     :loading="loading"
     :aria-label="label"
+    :data-button-shape="shape"
     data-button-icon-only
   >
     <template v-if="!loading" #leading><slot /></template>

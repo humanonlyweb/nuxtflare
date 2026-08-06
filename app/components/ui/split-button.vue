@@ -15,7 +15,7 @@ const {
   menuLabel: string;
   triggerAttrs?: Record<string, unknown>;
   expanded?: boolean;
-  variant?: Extract<ButtonVariant, "primary" | "secondary" | "ghost">;
+  variant?: Extract<ButtonVariant, "primary" | "secondary" | "solid" | "ghost" | "danger">;
   size?: Extract<ButtonSize, "small" | "medium">;
   shape?: "rounded" | "pill";
   disabled?: boolean;
@@ -90,10 +90,10 @@ const chrome = computed(() => ({
 [data-part="split-button"][data-split] [data-split-part="action"] {
   border-start-end-radius: 0;
   border-end-end-radius: 0;
+  border-inline-end: 0;
 }
 
 [data-part="split-button"][data-split] [data-split-part="toggle"] {
-  padding-inline: 0.45rem;
   border-start-start-radius: 0;
   border-end-start-radius: 0;
 }
@@ -113,22 +113,23 @@ const chrome = computed(() => ({
 }
 
 [data-part="split-button"][data-split] [data-split-part="toggle"] {
-  border-inline-start: 1px solid var(--split-seam, var(--border));
+  border-inline-start: 1px solid var(--split-seam, var(--color-hairline));
 }
 
-[data-part="split-button"][data-split-variant="primary"] {
-  --split-seam: color-mix(in oklch, var(--accent-fg) 22%, transparent);
+[data-part="split-button"]:is(
+  [data-split-variant="primary"],
+  [data-split-variant="solid"],
+  [data-split-variant="danger"]
+) {
+  --split-seam: color-mix(in oklch, var(--color-surface) 28%, transparent);
 }
 
-/* Outlines are drawn outside the box, so without this the focused half is clipped by its sibling. */
 [data-split-part]:focus-visible {
   position: relative;
   z-index: 1;
 }
 
 [data-split-part="caret"] {
-  --icon-size: 0.9rem;
-
   transition: transform var(--dur-base) var(--ease-out);
 }
 
