@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import type { AvatarItem, IconName, SelectOption, TableColumn } from "~/types/components.type";
+import type {
+  AvatarItem,
+  CommandItem,
+  IconName,
+  SelectOption,
+  TableColumn,
+} from "~/types/components.type";
 
 useSeoMeta({ title: "Design system — flaremail-studio" });
 
@@ -87,6 +93,35 @@ const dialogOpen = ref(false);
 const confirmOpen = ref(false);
 const variablesOpen = ref(false);
 const sendMenuOpen = ref(false);
+
+const paletteOpen = ref(false);
+
+const commands: CommandItem<string>[] = [
+  { value: "text", label: "Insert text block", group: "Blocks", icon: "type", keys: "mod+1" },
+  { value: "image", label: "Insert image block", group: "Blocks", icon: "image", keys: "mod+2" },
+  { value: "button", label: "Insert button block", group: "Blocks", icon: "rectangle-horizontal" },
+  { value: "divider", label: "Insert divider", group: "Blocks", icon: "divider" },
+  { value: "send", label: "Send test email", group: "Actions", icon: "send", keys: "mod+enter" },
+  { value: "schedule", label: "Schedule send", group: "Actions", icon: "clock" },
+  { value: "copy", label: "Copy HTML", group: "Actions", icon: "code", keys: "mod+shift+c" },
+  {
+    value: "publish",
+    label: "Publish campaign",
+    group: "Actions",
+    icon: "external-link",
+    hint: "Needs a subject line",
+    disabled: true,
+  },
+  { value: "desktop", label: "Preview on desktop", group: "Preview", icon: "monitor" },
+  { value: "mobile", label: "Preview on mobile", group: "Preview", icon: "smartphone" },
+];
+
+// The palette is the one shortcut the page owns; onKeyStroke is VueUse's.
+onKeyStroke("k", (event) => {
+  if (!event.metaKey && !event.ctrlKey) return;
+  event.preventDefault();
+  paletteOpen.value = !paletteOpen.value;
+});
 
 const sendOptions = [
   { icon: "mail", label: "Send to me", keys: "mod+enter" },
@@ -364,6 +399,12 @@ const badgeClass = {
             @select="(value) => toast.success(`Menu: ${value}`)"
           />
 
+          <UiButton variant="secondary" @click="paletteOpen = true">
+            <template #leading><UiIcon name="search" /></template>
+            Command palette
+            <template #trailing><UiKbd keys="mod+k" size="small" /></template>
+          </UiButton>
+
           <UiButton variant="secondary" @click="dialogOpen = true">Open dialog</UiButton>
           <UiButton variant="danger" @click="confirmOpen = true">Delete block</UiButton>
           <UiButton variant="ghost" @click="toast.success('Draft saved.')">Success toast</UiButton>
@@ -623,6 +664,12 @@ const badgeClass = {
       confirm-text="Delete block"
       danger
       @confirm="toast.error('Block deleted.')"
+    />
+
+    <UiCommandPalette
+      v-model:open="paletteOpen"
+      :items="commands"
+      @select="(value) => toast.success(`Ran command: ${value}`)"
     />
 
     <UiToast>

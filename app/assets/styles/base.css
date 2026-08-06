@@ -11,6 +11,23 @@
   padding: 0;
 }
 
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-ink) 22%, transparent);
+  background-clip: content-box;
+}
+
 html {
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
