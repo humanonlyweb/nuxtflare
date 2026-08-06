@@ -4,6 +4,7 @@ import { stdin, stdout } from "node:process";
 import { createInterface } from "node:readline/promises";
 
 const FILES_TO_REMOVE = [
+  ".git",
   "scripts",
   "app/pages/components.vue",
   "server/api/demo",

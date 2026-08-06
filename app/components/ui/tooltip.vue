@@ -73,7 +73,7 @@ const { text, placement = "top" } = defineProps<{
   border-bottom-color: var(--ui-tooltip-arrow, currentColor);
 }
 
-[data-part="tooltip-root"]:focus-within [data-part="tooltip"] {
+[data-part="tooltip-root"]:has(:focus-visible) [data-part="tooltip"] {
   opacity: 1;
   transform: translateX(-50%) translateY(0) scale(1);
   transition-delay: 250ms;

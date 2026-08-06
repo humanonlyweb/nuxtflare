@@ -7,7 +7,7 @@ import {
 const { pending = false } = defineProps<{ pending?: boolean }>();
 const emit = defineEmits<{ submit: [input: CreateNoteInput] }>();
 
-const formRef = useTemplateRef<HTMLElement>("formRef");
+const formRef = useTemplateRef("formRef");
 
 const { form, errors, submit, shouldDisableSubmit, reset } = useForm({
   validationSchema: createNoteSchema,

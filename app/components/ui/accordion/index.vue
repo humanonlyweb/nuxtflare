@@ -29,7 +29,7 @@ provide(accordionKey, {
   toggle,
 });
 
-const root = useTemplateRef<HTMLElement>("root");
+const root = useTemplateRef("root");
 
 // Arrow keys move between headers (APG). Delegating from the root beats a child
 // registry: the DOM already holds the triggers in document order.

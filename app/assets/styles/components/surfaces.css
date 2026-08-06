@@ -1,0 +1,90 @@
+/* Four surfaces total: panel (docked), card (email), toolbar (floating) and
+   popover (anchored, in overlay.css). Nothing else gets a shadow. */
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+.panel {
+  width: var(--panel-width);
+  background: var(--color-surface);
+  border-inline-start: 1px solid var(--color-hairline);
+}
+
+.panel__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-7);
+  border-block-end: 1px solid var(--color-hairline);
+}
+
+.toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 48px;
+  padding: var(--space-2);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-2);
+}
+
+.toolbar__sep {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 17px;
+  height: 36px;
+}
+
+.toolbar__sep::after {
+  content: "";
+  width: 1px;
+  height: 20px;
+  background: var(--color-hairline);
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  height: var(--control-field);
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-ink);
+  text-align: start;
+  cursor: pointer;
+}
+
+.list-row__value {
+  color: var(--color-muted);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .list-row:hover {
+    background: var(--color-subtle);
+  }
+}
+
+.list-row[aria-current="true"] {
+  background: var(--color-subtle);
+}
+
+.stage {
+  padding: var(--space-9);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+}

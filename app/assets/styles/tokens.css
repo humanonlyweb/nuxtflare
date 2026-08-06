@@ -1,0 +1,92 @@
+:root {
+  --color-surface: oklch(100% 0 0);
+  --color-canvas: oklch(94.3% 0.003 84.6);
+  --color-subtle: oklch(96.7% 0.003 84.6);
+  --color-hairline: oklch(91.3% 0.003 84.6);
+  --color-faint: oklch(73.2% 0.003 84.6); /* non-text only, 2.38:1 */
+  --color-dim: oklch(56.3% 0.003 84.6); /* lowest passing text, 4.60:1 */
+  --color-muted: oklch(53.8% 0.003 84.6);
+  --color-ink: oklch(17.7% 0.002 106.6);
+  --color-accent: oklch(47.7% 0.254 266.4);
+  --color-accent-soft: oklch(95.2% 0.022 277.5);
+
+  /* semantic — strong/soft pairs, AA as text on their own soft bg */
+  --color-warning: oklch(50.8% 0.105 71.9);
+  --color-warning-soft: oklch(95.8% 0.027 83.5);
+  --color-success: oklch(43.7% 0.084 165);
+  --color-success-soft: oklch(95% 0.017 156.9);
+  --color-danger: oklch(47.7% 0.171 28.6);
+  --color-danger-soft: oklch(95.1% 0.017 26.6);
+
+  /* hover fills — one step down in L, chroma held */
+  --color-accent-hover: oklch(42.6% 0.223 266.7);
+  --color-ink-hover: oklch(28.8% 0.004 106.6);
+  --color-danger-hover: oklch(42.6% 0.15 28.5);
+
+  /* type */
+  --font-ui: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", system-ui, sans-serif; /* same family, heavier + tighter */
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --text-label: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-display: 32px;
+  --leading-label: 14px;
+  --leading-xs: 15px;
+  --leading-sm: 16px;
+  --leading-base: 24px;
+  --leading-code: 22px;
+  --tracking-label: 0.06em;
+  --tracking-tight: -0.01em;
+  --tracking-display: -0.02em;
+  --weight-display: 600;
+
+  /* radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* elevation — only for things that float above the canvas */
+  --shadow-1: 0 1px 2px oklch(17.7% 0.002 106.6 / 10%);
+  --shadow-2: 0 8px 24px oklch(17.7% 0.002 106.6 / 10%), 0 2px 6px oklch(17.7% 0.002 106.6 / 6%);
+  --shadow-3: 0 16px 40px oklch(17.7% 0.002 106.6 / 14%), 0 2px 8px oklch(17.7% 0.002 106.6 / 6%);
+  --focus-ring: 0 0 0 3px var(--color-accent-soft), 0 0 0 4px var(--color-accent);
+  --focus-ring-danger: 0 0 0 3px var(--color-danger-soft), 0 0 0 4px var(--color-danger);
+  --field-ring: 0 0 0 3px var(--color-accent-soft);
+  --field-ring-danger: 0 0 0 3px var(--color-danger-soft);
+  --scrim: oklch(17.7% 0.002 106.6 / 32%);
+
+  /* control heights */
+  --control-sm: 28px;
+  --control-md: 32px;
+  --control-field: 34px;
+  --control-round: 36px;
+  --control-lg: 40px;
+
+  /* space */
+  --space-1: 4px;
+  --space-2: 6px;
+  --space-3: 8px;
+  --space-4: 10px;
+  --space-5: 12px;
+  --space-6: 16px;
+  --space-7: 20px;
+  --space-8: 24px;
+  --space-9: 32px;
+  --space-10: 40px;
+  --space-11: 64px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-fast: 120ms;
+  --dur-base: 160ms;
+  --dur-slow: 220ms;
+
+  --bar-height: 56px;
+  --panel-width: 316px;
+  --email-width: 648px;
+  --content-width: 1440px;
+}

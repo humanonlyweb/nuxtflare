@@ -3,8 +3,18 @@ import type { TdHTMLAttributes } from "vue";
 // Button
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
 export type ButtonSize = "small" | "medium" | "large";
+export type ButtonShape = "square" | "round";
 export type ButtonType = "button" | "submit" | "reset";
 export type LinkTarget = "_blank" | "_self" | "_parent" | "_top";
+
+// Avatar
+export type AvatarSize = "small" | "medium" | "large";
+
+export interface AvatarItem {
+  name: string;
+  src?: string;
+  id?: string | number;
+}
 
 // Select
 export type SelectValue = string | number;
@@ -33,10 +43,43 @@ export type TooltipPlacement = "top" | "bottom";
 // Icons
 export type IconName =
   | "arrow-down"
+  | "arrow-up"
   | "check"
   | "chevron-down"
-  | "github"
-  | "google"
+  | "chevron-left"
+  | "chevron-right"
+  | "chevron-up"
+  | "minus"
+  | "more-horizontal"
+  | "plus"
+  | "search"
+  | "x"
+  | "copy"
+  | "download"
+  | "external-link"
+  | "eye"
   | "pencil"
+  | "redo"
+  | "send"
+  | "sliders"
   | "trash"
-  | "x";
+  | "undo"
+  | "columns"
+  | "divider"
+  | "grip-vertical"
+  | "image"
+  | "layout-grid"
+  | "rectangle-horizontal"
+  | "type"
+  | "braces"
+  | "code"
+  | "link"
+  | "clock"
+  | "mail"
+  | "monitor"
+  | "smartphone"
+  | "alert-triangle"
+  | "check-circle"
+  | "info"
+  | "github"
+  | "google";

@@ -1,0 +1,306 @@
+[data-part="field"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+[data-part="field-label-wrap"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+[data-part="field-label"] {
+  font-size: var(--text-xs);
+  line-height: var(--leading-xs);
+  color: var(--color-muted);
+}
+
+[data-part="field-optional"] {
+  color: var(--color-dim);
+}
+
+[data-part="field-footer"] {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+[data-part="field-message"] {
+  font-size: var(--text-xs);
+  line-height: 16px;
+  color: var(--color-muted);
+}
+
+[data-part="field-count"] {
+  flex: none;
+  margin-inline-start: auto;
+  font-size: var(--text-xs);
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-dim);
+}
+
+[data-part="field-count"][data-field-count-exceeded] {
+  color: var(--color-danger);
+  font-weight: 500;
+}
+
+[data-part="field-message"][data-field-tone="error"] {
+  color: var(--color-danger);
+}
+
+/* --- input ------------------------------------------------ */
+[data-part="input-control"] {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  height: var(--control-field);
+  padding-inline: 10px;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  cursor: text;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+
+  &:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: var(--field-ring);
+  }
+
+  &:has([data-part="input"]:disabled) {
+    background: var(--color-subtle);
+    cursor: not-allowed;
+  }
+}
+
+[data-part="input"] {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-sm);
+  color: var(--color-ink);
+}
+
+[data-part="input"]:focus,
+[data-part="input"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+[data-part="input"]::placeholder {
+  color: var(--color-dim);
+}
+
+[data-part="input"]:disabled {
+  color: var(--color-dim);
+  cursor: not-allowed;
+}
+
+[data-part="input"][type="search"]::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+[data-part="input"]:autofill {
+  box-shadow: inset 0 0 0 100px var(--color-surface);
+  -webkit-text-fill-color: var(--color-ink);
+}
+
+[data-part="input"]:-webkit-autofill {
+  box-shadow: inset 0 0 0 100px var(--color-surface);
+  -webkit-text-fill-color: var(--color-ink);
+}
+
+[data-part="input-prefix"],
+[data-part="input-suffix"] {
+  --icon-size: 13px;
+
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: var(--text-label);
+  line-height: var(--leading-label);
+  color: var(--color-muted);
+}
+
+[data-field-size="small"] [data-part="input-control"] {
+  height: var(--control-sm);
+  padding-inline: 8px;
+}
+
+/* --- textarea --------------------------------------------- */
+[data-part="textarea"] {
+  width: 100%;
+  min-height: 76px;
+  padding: 10px;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  line-height: 18px;
+  color: var(--color-ink);
+  resize: vertical;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+[data-part="textarea"]::placeholder {
+  color: var(--color-dim);
+}
+
+[data-part="textarea"]:focus,
+[data-part="textarea"]:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--field-ring);
+}
+
+[data-part="textarea"]:disabled {
+  background: var(--color-subtle);
+  color: var(--color-dim);
+  cursor: not-allowed;
+  resize: none;
+}
+
+/* --- error ------------------------------------------------ */
+[data-field-error] [data-part="input-control"],
+[data-part="textarea"][data-textarea-error] {
+  border-color: var(--color-danger);
+}
+
+[data-field-error] [data-part="input-control"]:focus-within,
+[data-part="textarea"][data-textarea-error]:focus {
+  border-color: var(--color-danger);
+  box-shadow: var(--field-ring-danger);
+}
+
+/* --- spin button ------------------------------------------ */
+[data-part="spinbutton"] {
+  display: grid;
+  grid-template-columns: 1fr 20px;
+  grid-template-rows: 1fr 1fr;
+  width: 100%;
+  height: var(--control-field);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+
+  &:focus-within {
+    border-color: var(--color-accent);
+    box-shadow: var(--field-ring);
+  }
+}
+
+[data-part="spinbutton"][data-spinbutton-error] {
+  border-color: var(--color-danger);
+
+  &:focus-within {
+    box-shadow: var(--field-ring-danger);
+  }
+}
+
+[data-part="spinbutton-input"] {
+  grid-area: 1 / 1 / 3 / 2;
+  min-width: 0;
+  padding-inline: 10px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+[data-part="spinbutton-input"]:focus,
+[data-part="spinbutton-input"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+[data-part="spinbutton-decrement"],
+[data-part="spinbutton-increment"] {
+  --icon-size: 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-inline-start: 1px solid var(--color-hairline);
+  background: var(--color-surface);
+  font-family: inherit;
+  font-size: var(--text-label);
+  line-height: 1;
+  color: var(--color-muted);
+  cursor: pointer;
+}
+
+[data-part="spinbutton-increment"] {
+  grid-area: 1 / 2 / 2 / 3;
+}
+
+[data-part="spinbutton-decrement"] {
+  grid-area: 2 / 2 / 3 / 3;
+  border-block-start: 1px solid var(--color-hairline);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-part="spinbutton-decrement"]:hover:not(:disabled),
+  [data-part="spinbutton-increment"]:hover:not(:disabled) {
+    background: var(--color-subtle);
+    color: var(--color-ink);
+  }
+}
+
+[data-part="spinbutton-decrement"]:disabled,
+[data-part="spinbutton-increment"]:disabled {
+  color: var(--color-faint);
+  cursor: not-allowed;
+}
+
+[data-part="spinbutton"][data-spinbutton-disabled] {
+  background: var(--color-subtle);
+
+  & [data-part="spinbutton-input"] {
+    color: var(--color-dim);
+    cursor: not-allowed;
+  }
+}
+
+/* Validation-message fade, shared by input / textarea / select / spin-button. */
+.field-message-enter-active,
+.field-message-leave-active {
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.field-message-enter-from,
+.field-message-leave-to {
+  opacity: 0;
+}
+
+/* iOS zooms the viewport when a focused input is under 16px. */
+@media (pointer: coarse) {
+  [data-part="input"],
+  [data-part="textarea"],
+  [data-part="spinbutton-input"] {
+    font-size: 16px;
+  }
+}

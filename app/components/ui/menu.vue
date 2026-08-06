@@ -77,7 +77,6 @@ const {
           <button
             v-for="(item, i) in items"
             :key="item.value"
-            3
             type="button"
             role="menuitem"
             data-part="menu-item"

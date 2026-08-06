@@ -142,7 +142,7 @@ defineExpose({ focus: () => inputRef.value?.focus() });
         :disabled="disabled || readonly || atMin"
         @pointerdown="onPointerdown($event, -1)"
       >
-        <slot name="decrement">−</slot>
+        <slot name="decrement"><UiIcon name="chevron-down" /></slot>
       </button>
 
       <input
@@ -177,7 +177,7 @@ defineExpose({ focus: () => inputRef.value?.focus() });
         :disabled="disabled || readonly || atMax"
         @pointerdown="onPointerdown($event, 1)"
       >
-        <slot name="increment">+</slot>
+        <slot name="increment"><UiIcon name="chevron-up" /></slot>
       </button>
     </div>
 
@@ -202,19 +202,11 @@ defineExpose({ focus: () => inputRef.value?.focus() });
 <style scoped>
 [data-part="spinbutton-decrement"],
 [data-part="spinbutton-increment"] {
-  transition: transform 120ms var(--ease-out);
+  transition: background-color var(--dur-fast) var(--ease-out);
 }
 
 [data-part="spinbutton-decrement"]:active:not(:disabled),
 [data-part="spinbutton-increment"]:active:not(:disabled) {
-  transform: scale(0.92);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  [data-part="spinbutton-decrement"],
-  [data-part="spinbutton-increment"] {
-    transition: none;
-    transform: none;
-  }
+  background: var(--color-hairline);
 }
 </style>
