@@ -7,7 +7,7 @@ import type {
   TableColumn,
 } from "~/types/components.type";
 
-useSeoMeta({ title: "Design system — flaremail-studio" });
+useSeoMeta({ title: "Design system — Nuxtflare" });
 
 const toast = useToast();
 
@@ -668,7 +668,7 @@ const badgeClass = {
     <UiCommandPalette
       v-model:open="paletteOpen"
       :items="commands"
-      @select="(value) => toast.success(`Ran command: ${value}`)"
+      @select="(value: string) => toast.success(`Ran command: ${value}`)"
     />
 
     <UiToast>

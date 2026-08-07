@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Teleport } from "vue";
-
 const {
   title,
   description,
@@ -19,58 +17,87 @@ const {
   showCloseButton?: boolean;
 }>();
 
-const emit = defineEmits<{ close: [] }>();
+const emit = defineEmits<{
+  close: [];
+}>();
 
-const open = defineModel<boolean>("open", { default: false });
+const open = defineModel<boolean>("open", {
+  default: false,
+});
 
 const teleportReady = useTeleportReady();
 const dialogRef = useTemplateRef("dialogRef");
-const panelRef = useTemplateRef("panelRef");
+
 const titleId = useId();
 const descId = useId();
 
-onClickOutside(panelRef, () => {
-  if (closeOnBackdrop && dialogRef.value?.open) close();
-});
+const hasOpened = ref(open.value);
 
-const everOpened = ref(open.value);
+watch(
+  [open, teleportReady],
+  async ([isOpen, ready]) => {
+    if (!ready) return;
 
-watch(open, (isOpen) => {
-  if (isOpen) everOpened.value = true;
-  const el = dialogRef.value;
-  if (!el) return;
-  if (isOpen && !el.open) el.showModal();
-  else if (!isOpen && el.open) el.close();
-});
+    if (isOpen) {
+      hasOpened.value = true;
+    }
 
-// The <dialog> only enters the DOM once the teleport is allowed to render, which is this same tick
-// — so a dialog that starts open has to wait a beat for its ref before it can be shown.
-onMounted(async () => {
-  if (!open.value) return;
-  await nextTick();
-  dialogRef.value?.showModal();
-});
+    await nextTick();
+
+    const dialog = dialogRef.value;
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+      return;
+    }
+
+    if (!isOpen && dialog.open) {
+      dialog.close();
+    }
+  },
+  {
+    immediate: true,
+  },
+);
 
 onBeforeUnmount(() => {
-  if (dialogRef.value?.open) dialogRef.value.close();
+  const dialog = dialogRef.value;
+
+  if (dialog?.open) {
+    dialog.close();
+  }
 });
 
-function close() {
-  if (dismissible) open.value = false;
+function dismiss() {
+  if (!dismissible) return;
+
+  open.value = false;
+}
+
+function onDialogClick(event: MouseEvent) {
+  if (!closeOnBackdrop) return;
+  if (event.target === dialogRef.value) {
+    dismiss();
+  }
 }
 
 function onClose() {
-  if (open.value) open.value = false;
+  if (open.value) {
+    open.value = false;
+  }
   emit("close");
 }
 
 function onCancel(event: Event) {
-  if (!dismissible) event.preventDefault();
+  if (!dismissible) {
+    event.preventDefault();
+  }
 }
 </script>
 
 <template>
-  <teleport v-if="teleportReady" to="body">
+  <Teleport v-if="teleportReady" to="body">
     <dialog
       ref="dialogRef"
       data-part="dialog"
@@ -78,15 +105,21 @@ function onCancel(event: Event) {
       :data-dialog-flush="flush || undefined"
       :aria-labelledby="title ? titleId : undefined"
       :aria-describedby="description ? descId : undefined"
+      @click="onDialogClick"
       @close="onClose"
       @cancel="onCancel"
     >
-      <div ref="panelRef" data-part="panel">
+      <div data-part="panel">
         <header v-if="title || $slots.header" data-part="header">
           <slot name="header">
             <div data-part="header-text">
-              <h2 :id="titleId" data-part="title">{{ title }}</h2>
-              <p v-if="description" :id="descId" data-part="description">{{ description }}</p>
+              <h2 :id="titleId" data-part="title">
+                {{ title }}
+              </h2>
+
+              <p v-if="description" :id="descId" data-part="description">
+                {{ description }}
+              </p>
             </div>
           </slot>
 
@@ -95,22 +128,24 @@ function onCancel(event: Event) {
             type="button"
             data-part="close"
             aria-label="Close"
-            @click="close"
+            @click="dismiss"
           >
-            <slot name="close-icon"><UiIcon name="x" /></slot>
+            <slot name="close-icon">
+              <UiIcon name="x" />
+            </slot>
           </button>
         </header>
 
-        <div v-if="everOpened" data-part="body">
-          <slot :close="close" />
+        <div v-if="hasOpened" data-part="body">
+          <slot :close="dismiss" />
         </div>
 
         <footer v-if="$slots.footer" data-part="footer">
-          <slot name="footer" :close="close" />
+          <slot name="footer" :close="dismiss" />
         </footer>
       </div>
     </dialog>
-  </teleport>
+  </Teleport>
 </template>
 
 <style scoped>

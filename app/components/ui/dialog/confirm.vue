@@ -5,34 +5,43 @@ const {
   confirmText = "Confirm",
   cancelText = "Cancel",
   danger = false,
+  dismissible = true,
+  pending = false,
 } = defineProps<{
   title?: string;
   description?: string;
   confirmText?: string;
   cancelText?: string;
   danger?: boolean;
+  dismissible?: boolean;
+  pending?: boolean;
 }>();
 
-const open = defineModel<boolean>("open", { default: false });
-const emit = defineEmits<{ confirm: []; cancel: [] }>();
+const emit = defineEmits<{
+  confirm: [];
+  cancel: [];
+  close: [];
+}>();
 
-let decided = false;
+const open = defineModel<boolean>("open", {
+  default: false,
+});
 
 function confirm() {
-  decided = true;
+  if (pending) return;
+
   emit("confirm");
-  open.value = false;
 }
 
 function cancel() {
-  decided = true;
-  emit("cancel");
+  if (!dismissible || pending) return;
+
   open.value = false;
+  emit("cancel");
 }
 
 function onClose() {
-  if (!decided) emit("cancel");
-  decided = false;
+  emit("close");
 }
 </script>
 
@@ -41,15 +50,23 @@ function onClose() {
     v-model:open="open"
     :title="title"
     :description="description"
-    :close-on-backdrop="false"
-    :show-close-button="false"
+    :dismissible="dismissible && !pending"
     @close="onClose"
   >
     <slot />
 
     <template #footer>
-      <UiButton variant="ghost" @click="cancel">{{ cancelText }}</UiButton>
-      <UiButton :variant="danger ? 'danger' : 'primary'" :autofocus="!danger" @click="confirm">
+      <UiButton variant="ghost" :disabled="pending" @click="cancel">
+        {{ cancelText }}
+      </UiButton>
+
+      <UiButton
+        :variant="danger ? 'danger' : 'primary'"
+        :loading="pending"
+        :disabled="pending"
+        :autofocus="!danger"
+        @click="confirm"
+      >
         {{ confirmText }}
       </UiButton>
     </template>
