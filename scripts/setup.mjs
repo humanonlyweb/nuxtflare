@@ -30,7 +30,6 @@ const toSlug = (s) =>
 
 const name = toSlug(await rl.question("App name (kebab-case): "));
 const domain = (await rl.question("Production domain (blank to skip): ")).trim();
-const dropNotes = !/^n/i.test((await rl.question("Remove the demo notes feature? [Y/n]: ")).trim());
 rl.close();
 
 if (!name) {
@@ -115,51 +114,47 @@ await edit("wrangler.jsonc", (s) => {
 });
 await edit(".github/workflows/ci.yml", (s) => s.replaceAll("template-db", `${name}-db`));
 
-if (dropNotes) {
-  await Promise.all(
-    [
-      "app/components/notes",
-      "app/composables/use-notes.ts",
-      "server/api/notes",
-      "server/features/notes",
-      "server/database/schema/notes.ts",
-      "shared/utils/schema-validation/notes.schema.ts",
-      // The single shipped migration creates the notes table alongside the auth
-      // tables, so there is nothing to salvage — `db:generate` rebuilds it from
-      // whatever schema is left.
-      "server/database/migrations",
-    ].map(del),
-  );
+await Promise.all(
+  [
+    "app/components/notes",
+    "app/composables/use-notes.ts",
+    "server/api/notes",
+    "server/features/notes",
+    "server/database/schema/notes.ts",
+    "shared/utils/schema-validation/notes.schema.ts",
+    // The single shipped migration creates the notes table alongside the auth
+    // tables, so there is nothing to salvage — `db:generate` rebuilds it from
+    // whatever schema is left.
+    "server/database/migrations",
+  ].map(del),
+);
 
-  await edit("server/database/schema/index.ts", (s) =>
-    s.replace(/^export \* from "\.\/notes";\r?\n/m, ""),
-  );
-  await edit("shared/utils/schema-validation/index.ts", (s) =>
-    s.replace(/^export \* from "\.\/notes\.schema";\r?\n/m, 'export * from "./helper";\n'),
-  );
-  await edit("shared/utils/id-gen.ts", (s) => s.replace(/^ *note: "note",\r?\n/m, ""));
-  await edit("server/utils/container.ts", (s) =>
-    s
-      .replace(
-        /^import \{ Notes(Controller|Service) \} from "#server\/features\/notes\/.*\r?\n/gm,
-        "",
-      )
-      .replace(/^[ \t]*let notes: NotesController \| undefined;\r?\n/m, "")
-      .replace(/^([ \t]*)get notesController\(\) \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
-  );
-  await edit("nuxt.config.ts", (s) =>
-    s
-      .replace(/^ *experimental: \{ tasks: true \},\r?\n/m, "")
-      .replace(/^([ \t]*)tasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, "")
-      .replace(/^([ \t]*)scheduledTasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
-  );
-  await edit("server/utils/cache.ts", (s) =>
-    s.replaceAll("/api/notes", "/api/things").replaceAll("apinotes", "apithings"),
-  );
-  await writeFile("app/pages/index.vue", HOME_PAGE.replaceAll("__APP_NAME__", name));
-} else {
-  await edit("app/pages/index.vue", (s) => s.replaceAll("humanonlyweb starter", name));
-}
+await edit("server/database/schema/index.ts", (s) =>
+  s.replace(/^export \* from "\.\/notes";\r?\n/m, ""),
+);
+await edit("shared/utils/schema-validation/index.ts", (s) =>
+  s.replace(/^export \* from "\.\/notes\.schema";\r?\n/m, 'export * from "./helper";\n'),
+);
+await edit("shared/utils/id-gen.ts", (s) => s.replace(/^ *note: "note",\r?\n/m, ""));
+await edit("server/utils/container.ts", (s) =>
+  s
+    .replace(
+      /^import \{ Notes(Controller|Service) \} from "#server\/features\/notes\/.*\r?\n/gm,
+      "",
+    )
+    .replace(/^[ \t]*let notes: NotesController \| undefined;\r?\n/m, "")
+    .replace(/^([ \t]*)get notesController\(\) \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
+);
+await edit("nuxt.config.ts", (s) =>
+  s
+    .replace(/^ *experimental: \{ tasks: true \},\r?\n/m, "")
+    .replace(/^([ \t]*)tasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, "")
+    .replace(/^([ \t]*)scheduledTasks: \{\r?\n(?:.*\r?\n)*?\1\},\r?\n/m, ""),
+);
+await edit("server/utils/cache.ts", (s) =>
+  s.replaceAll("/api/notes", "/api/things").replaceAll("apinotes", "apithings"),
+);
+await writeFile("app/pages/index.vue", HOME_PAGE.replaceAll("__APP_NAME__", name));
 
 // Last on purpose: the re-run guard keys off the package name, so renaming only
 // once everything else succeeded means a crash halfway leaves setup re-runnable.
@@ -174,10 +169,7 @@ await edit("shared/utils/schema-validation/index.ts", (s) =>
 await Promise.all(FILES_TO_REMOVE.map(del));
 
 console.log(`\n✔ Renamed project to "${name}".`);
-console.log(
-  "  Removed: scripts/, /components demo page + its API route" +
-    (dropNotes ? ", notes feature" : ""),
-);
+console.log("  Removed: scripts/, /components demo page + its API route, notes feature");
 for (const w of warnings) console.log(`  ! ${w}`);
 
 console.log("\nNext:");
@@ -187,9 +179,5 @@ if (!domain) {
 console.log(`  • bunx wrangler d1 create ${name}-db`);
 console.log("  • Paste the returned database_id into wrangler.jsonc (REPLACE_WITH_D1_DATABASE_ID)");
 console.log("  • grep -ri humanonlyweb . for any branding this script missed");
-if (dropNotes) {
-  console.log("  • DOCS/ still uses `notes` as its worked example — read it, then trim");
-  console.log("  • bun run db:generate  &&  bun run db:migrate:local  &&  bun run dev");
-} else {
-  console.log("  • bun run db:migrate:local  &&  bun run dev");
-}
+console.log("  • DOCS/ still uses `notes` as its worked example — read it, then trim");
+console.log("  • bun run db:generate  &&  bun run db:migrate:local  &&  bun run dev");

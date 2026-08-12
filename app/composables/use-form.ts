@@ -36,18 +36,24 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
   const processing = ref(false);
   const submitted = ref(false);
 
-  const fieldErrors = computed<Record<string, string>>(() => {
+  const validationErrors = computed(() => {
     const result = validationSchema.safeParse(form);
 
-    if (result.success) return {};
+    if (result.success) return { byField: {}, byPath: {} };
 
-    const next: Record<string, string> = {};
+    const byField: Record<string, string> = {};
+    const byPath: Record<string, string> = {};
     for (const issue of result.error.issues) {
       const key = issue.path[0];
-      if (typeof key === "string" && !(key in next)) next[key] = issue.message;
+      if (typeof key !== "string") continue;
+      if (!(key in byField)) byField[key] = issue.message;
+
+      const path = issue.path.join(".");
+      if (!(path in byPath)) byPath[path] = issue.message;
     }
-    return next;
+    return { byField, byPath };
   });
+  const fieldErrors = computed<Record<string, string>>(() => validationErrors.value.byField);
 
   const errors = computed<FieldErrors<Values>>(() => {
     const visible: Record<string, string> = {};
@@ -109,6 +115,12 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
     touched.add(String(field));
   }
 
+  function errorAt(...path: Array<string | number>): string | undefined {
+    const field = path[0];
+    if (typeof field !== "string" || (!submitted.value && !touched.has(field))) return undefined;
+    return validationErrors.value.byPath[path.join(".")];
+  }
+
   function setValues(values: Partial<Values>) {
     Object.assign(form, values);
     baseline.value = clone(form);
@@ -159,6 +171,7 @@ export function useForm<Schema extends ZodType<FormValues, FormValues>>({
     processing,
     shouldDisableSubmit,
     validateField,
+    errorAt,
     setErrors,
     setValues,
     isValid,
