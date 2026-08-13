@@ -25,11 +25,38 @@ export function useSelect<T extends SelectValue>({
 }: UseSelectOptions<T>) {
   const isOpen = ref(false);
   const activeIndex = ref(-1);
+  const inheritedDisabled = ref(false);
 
   const triggerRef = useTemplateRef<HTMLButtonElement>("select-trigger");
   const listboxRef = useTemplateRef<HTMLUListElement>("select-listbox");
   const labelRef = useTemplateRef<HTMLLabelElement>("select-label");
   const controlRef = useTemplateRef<HTMLElement>("select-control");
+  let fieldsetObserver: MutationObserver | undefined;
+
+  const isEffectivelyDisabled = () =>
+    disabled.value || inheritedDisabled.value || triggerRef.value?.matches(":disabled") === true;
+
+  onMounted(() => {
+    const trigger = triggerRef.value;
+    if (!trigger) return;
+
+    const fieldsets: HTMLFieldSetElement[] = [];
+    for (let parent = trigger.parentElement; parent; parent = parent.parentElement) {
+      if (parent instanceof HTMLFieldSetElement) fieldsets.push(parent);
+    }
+    if (!fieldsets.length) return;
+
+    const syncInheritedDisabled = () => {
+      inheritedDisabled.value = trigger.matches(":disabled") && !disabled.value;
+    };
+    fieldsetObserver = new MutationObserver(syncInheritedDisabled);
+    for (const fieldset of fieldsets) {
+      fieldsetObserver.observe(fieldset, { attributes: true, attributeFilter: ["disabled"] });
+    }
+    syncInheritedDisabled();
+  });
+
+  onBeforeUnmount(() => fieldsetObserver?.disconnect());
 
   const { rect, viewportHeight, dropUp, measure } = useAnchorPosition(triggerRef, isOpen, (vh) =>
     Math.min(maxHeight.value, vh * VIEWPORT_HEIGHT_CAP),
@@ -79,7 +106,7 @@ export function useSelect<T extends SelectValue>({
   }
 
   function open(intent: OpenIntent) {
-    if (disabled.value || !options.value.length) return;
+    if (isEffectivelyDisabled() || !options.value.length) return;
 
     measure();
     isOpen.value = true;
@@ -101,6 +128,7 @@ export function useSelect<T extends SelectValue>({
   }
 
   function selectAt(index: number) {
+    if (isEffectivelyDisabled()) return;
     const option = options.value[index];
     if (!option || option.disabled) return;
 
@@ -164,7 +192,7 @@ export function useSelect<T extends SelectValue>({
   }
 
   function onTriggerKeydown(e: KeyboardEvent) {
-    if (disabled.value) return;
+    if (isEffectivelyDisabled()) return;
 
     switch (e.key) {
       case "ArrowDown":
@@ -213,7 +241,7 @@ export function useSelect<T extends SelectValue>({
   }
 
   function onTriggerPointerdown(e: PointerEvent) {
-    if (disabled.value || e.button !== 0) return;
+    if (isEffectivelyDisabled() || e.button !== 0) return;
     e.preventDefault();
     focusTrigger();
 
@@ -226,6 +254,10 @@ export function useSelect<T extends SelectValue>({
     await nextTick();
     const el = listboxRef.value;
     if (el?.showPopover && !el.matches(":popover-open")) el.showPopover();
+  });
+
+  watch([disabled, inheritedDisabled], ([explicit, inherited]) => {
+    if (explicit || inherited) close();
   });
 
   onClickOutside(controlRef, () => close(), { ignore: [labelRef] });
